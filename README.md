@@ -13,6 +13,7 @@ establish real-market prediction accuracy or trading performance.
 - Unit tests for rounding, saturation, dimensions, and overflow bounds.
 - Signed MAC and requantization RTL, verified against the Python arithmetic.
 - Parameterized streaming dense layer with backpressure and reset regression tests.
+- Configurable parallel neuron lanes with bit-exact results and measured simulation cycles.
 - Two-layer streaming MLP and a reproducible trained digit-classification benchmark.
 - Synthetic order-book data, a strict CSV importer, chronological splits, and an
   88→16→3 direction classifier with software replay.
@@ -32,6 +33,11 @@ scores, stronger regularization, and a stationary-output adjustment. On the same
 fresh synthetic test examples, stationary recall rises from 15.70% to 22.31%
 and macro-F1 from 0.4545 to 0.4744. The selected 88→16→3 model costs more cycles.
 See [the comparison and trade-offs](docs/improved-lob.md).
+
+**Parallel RTL:** after generating the saved model with `make improve-lob`, run
+`make improve-rtl` to compare one-lane and parallel implementations on the same
+592 test vectors. No retraining or board is needed for the RTL comparison.
+See [lane configurations, cycle measurements, and resource trade-offs](docs/parallel-rtl.md).
 
 The 64→16→10 benchmark achieves **96.22% floating-point accuracy** and **95.33%
 INT8 accuracy** on 450 held-out images. Both RTL layers and the complete network
@@ -92,7 +98,7 @@ See [the arithmetic contract](docs/arithmetic.md) and
 [the implementation plan](docs/implementation-plan.md).
 Verification coverage is recorded in [the verification plan](docs/verification-plan.md).
 See [streaming interfaces and cycle accounting](docs/interfaces.md) for the
-single-MAC architecture. The 8×4 fixture completes 44 cycles after the last input
+configurable MAC lanes. The default one-lane 8×4 fixture completes 44 cycles after the last input
 transfer when the receiver is always ready; this is a simulation result.
 
 ## Scope

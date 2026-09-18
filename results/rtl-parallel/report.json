@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "model": "build/lob-improved/model",
+  "architecture": [
+    88,
+    16,
+    3
+  ],
+  "artifact_sha256": {
+    "network.json": "37ce3bd01732258f9852a5bc2be9b413bbc06fbaa19eb453568f79ea6c471cd2",
+    "vectors.json": "f4b4fccea52ed16fe78f37d51577cf64b5852893274383cfcc06c07d7d9d5f68",
+    "layer0/model.json": "a1a79677f6b0c75967bf79442f5d9b52b13439574f0ca8e512c76fc0e2c8de34",
+    "layer0/weights.mem": "4783e068f4860becbfc248370926f6e52b49946bec9cfba50cfaab32be9d7e55",
+    "layer0/biases.mem": "862108a29001a567c022adb3addc0945c7f9798b13a216839cddb26528f5fd1d",
+    "layer1/model.json": "08dde91b1e2786fe8502bee74c3394671f0965053702bd0b6a74e6169b3aaa90",
+    "layer1/weights.mem": "b13a2ffe64ab90c2f7556c0f6c6d18761ebf5220716e05b7b2defe49589f6401",
+    "layer1/biases.mem": "59253e0001c637c6437e9a44ad14fa73f8c94afa612191c869fda7bf6c52aabd"
+  },
+  "measurement": "RTL simulation clock periods; no synthesis or hardware timing",
+  "configurations": [
+    {
+      "hidden_lanes": 1,
+      "output_lanes": 1,
+      "mac_instances": 2,
+      "samples": 592,
+      "bit_exact": true,
+      "min_latency_cycles": 1513,
+      "max_latency_cycles": 1513,
+      "min_input_start_interval_cycles": 1544,
+      "max_input_start_interval_cycles": 1544,
+      "baseline_to_current_max_latency_ratio": 1.0,
+      "verification_report": "lanes-1x1.json"
+    },
+    {
+      "hidden_lanes": 2,
+      "output_lanes": 1,
+      "mac_instances": 3,
+      "samples": 592,
+      "bit_exact": true,
+      "min_latency_cycles": 793,
+      "max_latency_cycles": 793,
+      "min_input_start_interval_cycles": 824,
+      "max_input_start_interval_cycles": 824,
+      "baseline_to_current_max_latency_ratio": 1.9079445145018916,
+      "verification_report": "lanes-2x1.json"
+    },
+    {
+      "hidden_lanes": 4,
+      "output_lanes": 1,
+      "mac_instances": 5,
+      "samples": 592,
+      "bit_exact": true,
+      "min_latency_cycles": 433,
+      "max_latency_cycles": 433,
+      "min_input_start_interval_cycles": 464,
+      "max_input_start_interval_cycles": 464,
+      "baseline_to_current_max_latency_ratio": 3.4942263279445727,
+      "verification_report": "lanes-4x1.json"
+    },
+    {
+      "hidden_lanes": 4,
+      "output_lanes": 3,
+      "mac_instances": 7,
+      "samples": 592,
+      "bit_exact": true,
+      "min_latency_cycles": 397,
+      "max_latency_cycles": 397,
+      "min_input_start_interval_cycles": 464,
+      "max_input_start_interval_cycles": 464,
+      "baseline_to_current_max_latency_ratio": 3.8110831234256928,
+      "verification_report": "lanes-4x3.json"
+    },
+    {
+      "hidden_lanes": 8,
+      "output_lanes": 3,
+      "mac_instances": 11,
+      "samples": 592,
+      "bit_exact": true,
+      "min_latency_cycles": 217,
+      "max_latency_cycles": 217,
+      "min_input_start_interval_cycles": 284,
+      "max_input_start_interval_cycles": 284,
+      "baseline_to_current_max_latency_ratio": 6.972350230414746,
+      "verification_report": "lanes-8x3.json"
+    }
+  ]
+}

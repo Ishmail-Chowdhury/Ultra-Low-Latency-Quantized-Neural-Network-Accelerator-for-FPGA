@@ -38,6 +38,11 @@ remain separate milestones.
   subsequent complete vectors must match the reference.
 - 1×1 and non-power-of-two matrices, ReLU, and extreme requantization shifts.
 - Early or missing input `tlast` must trigger the framing assertion.
+- Parallel lanes from one through the output count, including partial groups,
+  signed extrema, nonzero biases, ReLU, saturation, and extreme shifts.
+- Reset after accepting the first output of a group, while the next is blocked.
+- Parallel MLP layers with independent lane counts, including a fast hidden layer
+  feeding a slower output layer, and isolated-vector cycle-count assertions.
 
 ## Trained network
 
@@ -47,7 +52,7 @@ and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
 The network suite also covers inter-layer stalls and reset recovery using a small
 synthetic MLP with a deliberately slow output layer.
 
-`make test` runs 48 Python and 11 RTL test methods (many parameterized cases).
+`make test` runs 48 Python and 15 RTL test methods (many parameterized cases).
 The real-data benchmark is a separate command so the core tests remain free of
 third-party Python dependencies. GitHub Actions runs the combined audit below; the workflow
 configuration has not yet been exercised on GitHub.
@@ -88,6 +93,14 @@ also verifies all selected-model held-out vectors through source replay and RTL.
 design refitted on identical data. Source replay independently checks baseline
 predictions and comparison deltas. Corruption tests reject omitted baseline
 checksums, modified baseline scores, and inflated reported improvements.
+
+## Parallel RTL benchmark
+
+`make improve-rtl` uses the saved improved model to compare five lane
+configurations. Every configuration verifies every held-out example in both
+individual layers and the full network, with and without stalls, using the saved
+ROM files. Reports record lane counts, logical MAC instances, latency, input
+start intervals, and artifact hashes. See [parallel RTL](parallel-rtl.md).
 
 ## Tool references
 

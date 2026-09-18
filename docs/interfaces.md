@@ -24,26 +24,39 @@ packets other than reset; hardware integration must supply correctly framed data
 
 ## Static configuration
 
-`INPUTS`, `OUTPUTS`, `ACC_WIDTH`, `SHIFT`, and `RELU` are elaboration parameters.
+`INPUTS`, `OUTPUTS`, `ACC_WIDTH`, `SHIFT`, `RELU`, and `LANES` are elaboration parameters.
 `WEIGHT_FILE` and `BIAS_FILE` name `$readmemh` files produced by the exporter.
 Weights are row-major. Dimensions may be one or a non-power of two.
+
+`LANES` defaults to one and must be between one and `OUTPUTS`. Each lane has
+its own signed MAC and requantizer. Lanes share the input element and compute
+consecutive neurons in parallel. The final group masks unused lanes when the
+output count is not divisible by `LANES`. A result register per lane holds the
+group while the output stream serializes it in neuron order. All group results
+and stream position remain stable under backpressure; reset discards them.
+The saved memory layout and arithmetic contract do not change.
 
 The initial memories have asynchronous read ports. This is deliberately a small
 functional baseline, **not a claim of inferred BRAM**. A BRAM implementation
 needs synchronous reads and corresponding pipeline/control changes. Vivado
 synthesis must determine actual resource use before making FPGA claims.
+Parallel lanes require additional independent weight reads and arithmetic units;
+the logical lane count is not a measured DSP or LUT count.
 
 ## Cycle accounting
 
-For each of M outputs: one bias-load cycle, N MAC cycles, one requantization
-cycle, and one output-transfer cycle. With continuously available inputs and an
-always-ready output:
+For N inputs, M outputs, and L lanes, there are `G = ceil(M / L)` groups.
+Each group takes one bias-load cycle, N MAC cycles, and one requantization cycle.
+Output serialization takes M transfer cycles in total, including a partial final
+group. With continuously available inputs and an always-ready output:
 
-- Final input transfer → final output transfer: `M * (N + 3)` clock periods.
-- First input transfer → final output transfer: `N - 1 + M * (N + 3)` periods.
-- First input of one vector → first input of the next: `N + M * (N + 3)` periods.
+- Final input transfer → final output transfer: `G * (N + 2) + M` clock periods.
+- First input transfer → final output transfer: `N - 1 + G * (N + 2) + M` periods.
+- First input of one vector → first input of the next: `N + G * (N + 2) + M` periods.
 
-These are edge-to-edge differences. For N=8, M=4 they are 44, 51, and 52 cycles.
+These are edge-to-edge differences. For N=8, M=4, L=1 they are 44, 51, and 52
+cycles, preserving the original `M * (N + 3)` compute latency. L=4 reduces these
+to 14, 21, and 22 cycles.
 Input gaps increase the first-input latency; output stalls increase both latency
 measurements. Finite fixed latency is claimed only for the no-stall case. Convert
 cycles to time only after a hardware clock frequency is established.
@@ -51,15 +64,20 @@ cycles to time only after a hardware clock frequency is established.
 ## Two-layer MLP
 
 `rtl/top/mlp.sv` connects two dense layers directly: hidden ReLU followed by signed
-output logits. Each layer has its own MAC and input buffer. The hidden layer can
+output logits. Each layer has its own MAC lanes and input buffer. Set
+`HIDDEN_LANES` and `OUTPUT_LANES` independently; both default to one. The hidden layer can
 begin accepting another vector while the output layer finishes the preceding one;
 its outputs stall if the next layer cannot yet accept them. Reset flushes both.
 
-For a single isolated 64→16→10 vector, final input to final output takes
+For a single isolated 64→16→10 vector with one lane per layer, final input to final output takes
 `16 * (64 + 3) + 10 * (16 + 3) = 1262` clock periods without external stalls.
 Repeated vectors can experience internal stalls even with an always-ready final
 receiver. Measure this traffic pattern separately; a single-layer cycle formula
 does not characterize the full pipeline's steady-state latency.
+For an isolated vector, sum the two layer compute latencies. See
+[parallel RTL measurements](parallel-rtl.md) for the LOB model and repeated-vector
+input intervals. The scoreboard checks the isolated-vector formula and measures
+minimum/maximum latency and input-start intervals across the complete stream.
 
 The RTL consumes static per-layer shift parameters from the export metadata.
 There is no runtime model-loading interface or on-chip argmax yet. A host can

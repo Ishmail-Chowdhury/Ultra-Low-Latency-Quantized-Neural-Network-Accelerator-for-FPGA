@@ -8,7 +8,7 @@ permissions:
 jobs:
   regression:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,6 +27,8 @@ jobs:
         run: make walk-forward
       - name: Verify INT8-aware model improvement and paired comparison
         run: make improve-lob
+      - name: Compare parallel RTL configurations on the saved model
+        run: make improve-rtl
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -43,4 +45,5 @@ jobs:
             build/lob-improved/model/report.json
             build/lob-improved/model/rtl_report.json
             build/lob-improved/model/replay_report.json
+            build/rtl-parallel/*.json
           if-no-files-found: error

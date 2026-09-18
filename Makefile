@@ -1,7 +1,11 @@
 PYTHON ?= python3
 
-.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark validate-software walk-forward improve-lob
+.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark validate-software walk-forward improve-lob improve-rtl
 test: test-python test-rtl
+
+# Reuse the saved model from improve-lob; no training or board is required.
+improve-rtl:
+	$(PYTHON) -m scripts.benchmark_rtl
 
 validate-software:
 	$(PYTHON) -m scripts.validate_software

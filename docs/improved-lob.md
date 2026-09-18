@@ -52,6 +52,9 @@ output transfer in simulation; the prior architecture's controller formula gives
 761 cycles. Weight entries grow from 728 to 1,456, while two MAC units remain,
 one per layer. Better classification costs more sequential computation and
 storage. No achieved hardware clock or wall-clock latency is claimed.
+These counts use the default one-lane-per-layer configuration. The subsequent
+[parallel RTL experiment](parallel-rtl.md) reduces cycles for this same model
+without changing its logits or accuracy.
 
 ## Verification
 
