@@ -11,9 +11,12 @@
 5. **Complete — Software LOB pipeline:** create synthetic snapshots and import CSVs,
    build disjoint chronological samples, select a compact MLP on validation data,
    and verify integer inference through raw-CSV replay and RTL simulation.
-6. **Next — Software experiments:** import real snapshots, add walk-forward
-   validation, investigate class balance, and specify fixed-point preprocessing.
-7. **When hardware is available:** build for the KR260, establish a clock constraint, inspect timing
+6. **Complete — Temporal model evaluation:** compare balanced/unbalanced models
+   on three expanding folds, reserve a final test interval, export the selected
+   compact model, and verify source replay and saved-memory RTL.
+7. **Next — Software experiments:** run the same protocol on real snapshots or
+   specify a fixed-point feature frontend; reserve new test data for new tuning.
+8. **When hardware is available:** build for the KR260, establish a clock constraint, inspect timing
    and resource reports, and run identical vectors through a hardware test harness.
 
 Each completed milestone receives a separate Git commit after its checks pass.

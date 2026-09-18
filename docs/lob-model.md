@@ -78,12 +78,12 @@ split support indices, source hashes, float parameters, and golden vectors.
 
 ## Next software experiments
 
-Use real, properly licensed snapshots and retain dataset provenance. For a new
-experiment, add expanding-window validation over training/validation history,
-then reserve a fresh final test interval. Test class balancing and regularization
-using validation data; stationary-class recall is weak in the initial run. Keep
-logistic regression as a comparator. Test input drift, missing-depth handling,
-and alternative horizons before attempting performance claims.
+Expanding-window selection and class-balanced candidates are now available through
+`make walk-forward`; see [its protocol and results](walk-forward.md). Use real,
+properly licensed snapshots next and retain provenance. For new tuning, reserve
+a fresh final test interval. Stationary-class recall remains weak. Keep logistic
+regression as a comparator and test input drift, missing depth, and alternative
+horizons before making performance claims.
 
 Feature extraction and normalization currently run on the host. RTL latency
 covers only the dense network on already prepared INT8 inputs. Converting the

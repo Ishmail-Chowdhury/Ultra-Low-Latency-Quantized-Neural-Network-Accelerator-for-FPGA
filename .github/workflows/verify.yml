@@ -23,6 +23,8 @@ jobs:
           python -m pip install -r requirements-training.txt
       - name: Validate software, exports, replay, and RTL from fresh models
         run: make validate-software
+      - name: Evaluate expanding-window selection and class balancing
+        run: make walk-forward
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -32,4 +34,8 @@ jobs:
             build/software-validation/run-*/*.log
             build/software-validation/run-*/lob/*report.json
             build/software-validation/run-*/digits/*report.json
+            build/lob-walk-forward/model/report.json
+            build/lob-walk-forward/model/selection.json
+            build/lob-walk-forward/model/rtl_report.json
+            build/lob-walk-forward/model/replay_report.json
           if-no-files-found: error

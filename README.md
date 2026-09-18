@@ -17,10 +17,15 @@ establish real-market prediction accuracy or trading performance.
 - Synthetic order-book data, a strict CSV importer, chronological splits, and an
   88→16→3 direction classifier with software replay.
 
-**Next software workflow:** `make lob-benchmark` generates 3,000 synthetic
+**Initial software workflow:** `make lob-benchmark` generates 3,000 synthetic
 snapshots, trains and quantizes the model, verifies its RTL, and writes prediction
 CSV files. No board is required. See [the data contract](docs/lob-data.md),
 [model commands](docs/lob-model.md), and [synthetic results](docs/lob-results.md).
+
+**Expanding-window evaluation:** `make walk-forward` compares balanced and
+unbalanced MLPs and linear models on three successive validation periods, then
+tests the selected models on a reserved final interval. The recorded selected
+MLP is 88→8→3. See [the protocol and results](docs/walk-forward.md).
 
 The 64→16→10 benchmark achieves **96.22% floating-point accuracy** and **95.33%
 INT8 accuracy** on 450 held-out images. Both RTL layers and the complete network

@@ -47,7 +47,7 @@ and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
 The network suite also covers inter-layer stalls and reset recovery using a small
 synthetic MLP with a deliberately slow output layer.
 
-`make test` runs 38 Python and 11 RTL test methods (many parameterized cases).
+`make test` runs 44 Python and 11 RTL test methods (many parameterized cases).
 The real-data benchmark is a separate command so the core tests remain free of
 third-party Python dependencies. GitHub Actions runs the combined audit below; the workflow
 configuration has not yet been exercised on GitHub.
@@ -74,6 +74,13 @@ recomputes chronological labels/splits and training preprocessing, and audits
 the written prediction CSV. See [software validation](software-validation.md)
 for coverage, reports, and limits. CI runs this combined command; hosted CI has
 not yet been exercised here.
+
+## Expanding-window experiment
+
+The expanding-window tests verify disjoint feature/label support, growth of
+training prefixes, isolation of the final holdout, training-only balancing and
+normalization, stable selection ties, and session boundaries. `make walk-forward`
+also verifies all selected-model held-out vectors through source replay and RTL.
 
 ## Tool references
 

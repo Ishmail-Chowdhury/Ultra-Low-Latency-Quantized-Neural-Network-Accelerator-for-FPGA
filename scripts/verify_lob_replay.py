@@ -8,6 +8,7 @@ from pathlib import Path
 from models.lob.data import Standardizer, prepare, read_snapshots
 from models.lob.inference import LobPredictor
 from models.lob.metrics import classification_metrics
+from models.lob.walk_forward import final_splits, plan
 from models.quantization.calibration import quantize_value
 
 
@@ -17,7 +18,15 @@ def verify(model: Path, source: Path) -> dict:
     if hashlib.sha256(source.read_bytes()).hexdigest() != report["source_sha256"]:
         raise ValueError("replay verification requires the original dataset CSV")
     rows = read_snapshots(source, predictor.config.levels)
-    splits = prepare(rows, predictor.config)
+    protocol = predictor.network.get("evaluation_protocol", "single_split")
+    if protocol == "walk_forward_v1":
+        if predictor.network.get("walk_forward_plan") != plan(len(rows)):
+            raise ValueError("Walk-forward plan does not match source data")
+        splits = final_splits(rows, predictor.config)
+    elif protocol == "single_split":
+        splits = prepare(rows, predictor.config)
+    else:
+        raise ValueError("Unknown LOB evaluation protocol")
     stored_splits = json.loads((model / "split.json").read_text())
     for name, split in splits.items():
         expected_split = {"raw_start": split["raw_start"], "raw_stop": split["raw_stop"],

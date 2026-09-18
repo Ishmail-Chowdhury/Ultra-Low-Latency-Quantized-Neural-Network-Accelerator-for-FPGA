@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark validate-software
+.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark validate-software walk-forward
 test: test-python test-rtl
 
 validate-software:
@@ -42,3 +42,10 @@ lob-benchmark: lob-data
 	$(MAKE) train-lob
 	$(MAKE) verify-lob
 	$(MAKE) predict-lob
+
+walk-forward:
+	$(PYTHON) -m scripts.generate_lob --seed 2027 --output build/lob-walk-forward/snapshots.csv
+	$(PYTHON) -m models.training.walk_forward_lob --input build/lob-walk-forward/snapshots.csv --kind synthetic --source "Local pressure-driven toy generator, fresh seed 2027"
+	$(PYTHON) -m scripts.verify_lob_replay --model build/lob-walk-forward/model --input build/lob-walk-forward/snapshots.csv
+	$(PYTHON) -m scripts.verify_export --model build/lob-walk-forward/model
+	$(PYTHON) -m scripts.predict_lob --model build/lob-walk-forward/model --input build/lob-walk-forward/snapshots.csv --output build/lob-walk-forward/predictions.csv

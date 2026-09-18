@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "samples": 592,
+  "bit_exact": true,
+  "saved_memory_files_tested": true,
+  "architecture": [
+    88,
+    8,
+    3
+  ],
+  "cases": {
+    "hidden_no_stalls": {
+      "outputs": 4736,
+      "last_input_to_last_output_cycles": 728,
+      "first_input_to_last_output_cycles": 815,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 728,
+      "max_last_input_to_last_output_cycles": 728
+    },
+    "output_no_stalls": {
+      "outputs": 1776,
+      "last_input_to_last_output_cycles": 33,
+      "first_input_to_last_output_cycles": 40,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 33,
+      "max_last_input_to_last_output_cycles": 33
+    },
+    "mlp_no_stalls": {
+      "outputs": 1776,
+      "last_input_to_last_output_cycles": 761,
+      "first_input_to_last_output_cycles": 848,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 761,
+      "max_last_input_to_last_output_cycles": 761
+    },
+    "hidden_stalls": {
+      "outputs": 4736,
+      "last_input_to_last_output_cycles": 728,
+      "first_input_to_last_output_cycles": 841,
+      "stall_cycles": 1611,
+      "min_last_input_to_last_output_cycles": 728,
+      "max_last_input_to_last_output_cycles": 740
+    },
+    "output_stalls": {
+      "outputs": 1776,
+      "last_input_to_last_output_cycles": 33,
+      "first_input_to_last_output_cycles": 40,
+      "stall_cycles": 651,
+      "min_last_input_to_last_output_cycles": 33,
+      "max_last_input_to_last_output_cycles": 91
+    },
+    "mlp_stalls": {
+      "outputs": 1776,
+      "last_input_to_last_output_cycles": 764,
+      "first_input_to_last_output_cycles": 874,
+      "stall_cycles": 571,
+      "min_last_input_to_last_output_cycles": 761,
+      "max_last_input_to_last_output_cycles": 769
+    }
+  }
+}
