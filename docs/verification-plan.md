@@ -27,6 +27,17 @@ the simulator. Exhaustive multiplication also checks SystemVerilog signedness.
 This is functional simulation; synthesis, timing closure, and board validation
 remain separate milestones.
 
+## Streaming layer
+
+- All 36 exported fixture vectors, including 144 scored output elements.
+- Exact no-stall cycle counts for the 8×4 layer and alternate dimensions.
+- Three fixed seeds for source gaps and receiver stalls, including prolonged
+  output blocking, with independent checks for stable output data/last.
+- Repeated vectors, output order, packet boundaries, and no extra outputs.
+- Reset with a partial input, during MAC activity, and while an output is stalled;
+  subsequent complete vectors must match the reference.
+- 1×1 and non-power-of-two matrices, ReLU, and extreme requantization shifts.
+
 ## Tool references
 
 - [Icarus command-line flags](https://steveicarus.github.io/iverilog/usage/command_line_flags.html)
