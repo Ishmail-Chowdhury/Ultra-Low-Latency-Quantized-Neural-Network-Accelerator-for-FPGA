@@ -32,6 +32,8 @@ def validate_export(directory: Path) -> tuple[dict, dict, DenseSpec, DenseSpec]:
         required.add("preprocessing.json")
         if network.get("dataset_kind") != report.get("dataset_kind"):
             raise ValueError("Inconsistent dataset provenance")
+    if network.get("experiment_profile") == "stationary" or "paired_comparison" in report:
+        required.add("paired_baseline.json")
     hashes = report.get("sha256")
     if not isinstance(hashes, dict) or not required.issubset(hashes):
         raise ValueError("Incomplete export checksum manifest")

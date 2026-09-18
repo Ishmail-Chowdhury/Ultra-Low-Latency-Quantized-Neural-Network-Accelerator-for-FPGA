@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -89,4 +90,43 @@ class ExportValidationTests(unittest.TestCase):
     def test_reported_accuracy_is_recomputed(self):
         self.edit("report.json", lambda d: d["test"]["int8_mlp"].update(accuracy=-1))
         with self.assertRaisesRegex(ValueError, "metrics"):
+            verify(self.path, self.source)
+
+    def add_paired_baseline(self):
+        network = json.loads((self.path / "network.json").read_text())
+        vectors = json.loads((self.path / "vectors.json").read_text())["vectors"]
+        baseline = {"model": {"layer0": json.loads((self.path / "layer0/model.json").read_text()),
+                              "layer1": json.loads((self.path / "layer1/model.json").read_text()),
+                              "scales": network["layers"]},
+                    "vectors": [{k: v[k] for k in ("dataset_index", "label", "outputs")} for v in vectors]}
+        (self.path / "paired_baseline.json").write_text(json.dumps(baseline))
+        report = json.loads((self.path / "report.json").read_text())
+        report["sha256"]["paired_baseline.json"] = hashlib.sha256((self.path / "paired_baseline.json").read_bytes()).hexdigest()
+        report["test"]["previous_8_balanced_int8_same_data"] = report["test"]["int8_mlp"]
+        report["paired_comparison"] = {"same_data_and_training_seed": True, "macro_f1_delta": 0.0,
+                                       "accuracy_delta_percentage_points": 0.0,
+                                       "stationary_recall_delta_percentage_points": 0.0}
+        (self.path / "report.json").write_text(json.dumps(report))
+
+    def test_paired_comparison_recomputed_on_identical_examples(self):
+        self.add_paired_baseline()
+        result = verify(self.path, self.source)
+        self.assertEqual(result["paired_baseline_verified"]["macro_f1_delta"], 0)
+
+    def test_corrupt_baseline_prediction_rejected(self):
+        self.add_paired_baseline()
+        self.edit("paired_baseline.json", lambda d: d["vectors"][0]["outputs"].__setitem__(0, 127))
+        with self.assertRaisesRegex(ValueError, "Paired baseline mismatch"):
+            verify(self.path, self.source)
+
+    def test_inflated_comparison_delta_rejected(self):
+        self.add_paired_baseline()
+        self.edit("report.json", lambda r: r["paired_comparison"].update(macro_f1_delta=1.0))
+        with self.assertRaisesRegex(ValueError, "comparison deltas"):
+            verify(self.path, self.source)
+
+    def test_baseline_manifest_entry_cannot_be_omitted(self):
+        self.add_paired_baseline()
+        self.edit("report.json", lambda r: r["sha256"].pop("paired_baseline.json"))
+        with self.assertRaisesRegex(ValueError, "Incomplete"):
             verify(self.path, self.source)
