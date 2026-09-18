@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+build/
+*.vcd
+*.fst
+*.vvp
+*.jou
+*.log
+.Xil/
+*.bit
+*.dcp
+*.xpr
+models/checkpoints/
+.DS_Store
