@@ -25,10 +25,16 @@ jobs:
         run: make test
       - name: Train, export, and verify the benchmark
         run: make benchmark
+      - name: Train and verify synthetic order-book pipeline
+        run: make lob-benchmark
       - uses: actions/upload-artifact@v4
         with:
-          name: digits-reports
+          name: benchmark-reports
           path: |
             build/digits/report.json
             build/digits/rtl_report.json
+            build/lob-data/prepared/summary.json
+            build/lob/report.json
+            build/lob/rtl_report.json
+            build/lob/replay_report.json
           if-no-files-found: error

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "dataset_kind": "synthetic",
+  "source_sha256": "25386bd6b1ed6fcd7f9db404917c4835bea63d8488c3eda600440f015e53279b",
+  "raw_rows": 3000,
+  "features": 88,
+  "config": {
+    "levels": 5,
+    "lookback": 4,
+    "horizon": 5,
+    "tick_size": 0.01,
+    "threshold_ticks": 0.5
+  },
+  "splits": {
+    "train": {
+      "samples": 1792,
+      "raw_start": 0,
+      "raw_stop": 1800,
+      "class_counts": {
+        "down": 809,
+        "stationary": 366,
+        "up": 617
+      }
+    },
+    "validation": {
+      "samples": 592,
+      "raw_start": 1800,
+      "raw_stop": 2400,
+      "class_counts": {
+        "down": 229,
+        "stationary": 115,
+        "up": 248
+      }
+    },
+    "test": {
+      "samples": 592,
+      "raw_start": 2400,
+      "raw_stop": 3000,
+      "class_counts": {
+        "down": 261,
+        "stationary": 121,
+        "up": 210
+      }
+    }
+  }
+}

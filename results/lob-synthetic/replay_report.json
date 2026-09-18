@@ -1,0 +1,16 @@
+{
+  "dataset_kind": "synthetic",
+  "samples": 592,
+  "raw_csv_matches_export": true,
+  "tail_prediction_without_future_label": {
+    "decision_index": 2999,
+    "timestamp_ns": 2999000000,
+    "class_id": 0,
+    "prediction": "down",
+    "logits": [
+      29,
+      -31,
+      -31
+    ]
+  }
+}

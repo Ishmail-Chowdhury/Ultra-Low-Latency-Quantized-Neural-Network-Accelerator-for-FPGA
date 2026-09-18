@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data
+.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark
 test: test-python test-rtl
 
 test-python:
@@ -24,3 +24,18 @@ benchmark: train
 lob-data:
 	$(PYTHON) -m scripts.generate_lob
 	$(PYTHON) -m scripts.prepare_lob --input build/lob-data/snapshots.csv --kind synthetic --source "Local pressure-driven toy generator"
+
+train-lob:
+	$(PYTHON) -m models.training.train_lob
+
+verify-lob:
+	$(PYTHON) -m scripts.verify_export --model build/lob
+	$(PYTHON) -m scripts.verify_lob_replay
+
+predict-lob:
+	$(PYTHON) -m scripts.predict_lob
+
+lob-benchmark: lob-data
+	$(MAKE) train-lob
+	$(MAKE) verify-lob
+	$(MAKE) predict-lob

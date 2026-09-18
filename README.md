@@ -1,9 +1,10 @@
 # Quantized Neural-Network FPGA Accelerator
 
 A SystemVerilog accelerator project starting with a bit-exact INT8 dense layer.
-The intended FPGA target is the AMD Kria KR260. Limit-order-book prediction is a
-potential application; the initial arithmetic benchmark does not establish
-prediction accuracy or trading performance.
+The intended FPGA target is the AMD Kria KR260. Development currently runs without
+hardware: Python training, integer inference, and RTL simulation. A synthetic
+limit-order-book pipeline now exercises the intended application; it does not
+establish real-market prediction accuracy or trading performance.
 
 ## Current milestone
 
@@ -13,6 +14,13 @@ prediction accuracy or trading performance.
 - Signed MAC and requantization RTL, verified against the Python arithmetic.
 - Parameterized streaming dense layer with backpressure and reset regression tests.
 - Two-layer streaming MLP and a reproducible trained digit-classification benchmark.
+- Synthetic order-book data, a strict CSV importer, chronological splits, and an
+  88→16→3 direction classifier with software replay.
+
+**Next software workflow:** `make lob-benchmark` generates 3,000 synthetic
+snapshots, trains and quantizes the model, verifies its RTL, and writes prediction
+CSV files. No board is required. See [the data contract](docs/lob-data.md),
+[model commands](docs/lob-model.md), and [synthetic results](docs/lob-results.md).
 
 The 64→16→10 benchmark achieves **96.22% floating-point accuracy** and **95.33%
 INT8 accuracy** on 450 held-out images. Both RTL layers and the complete network
@@ -60,7 +68,7 @@ make benchmark
 ```
 
 `make train` and `make verify-model` run those stages separately. GitHub Actions
-is configured to run the regression and benchmark on pushes and pull requests;
+is configured to run the regression and benchmarks on pushes and pull requests;
 the hosted workflow has not yet been run for this repository.
 
 See [the arithmetic contract](docs/arithmetic.md) and
@@ -72,8 +80,10 @@ transfer when the receiver is always ready; this is a simulation result.
 
 ## Scope
 
-The reference, compute blocks, streaming layers, and trained MLP now run in
-simulation. Next, synthesize for the KR260 and measure hardware behavior.
+The reference, compute blocks, streaming layers, and trained models run in
+software and simulation. Next software work can use real CSV snapshots, improve
+chronological validation, and investigate fixed-point feature preprocessing.
+KR260 synthesis and hardware measurements can wait until hardware is available.
 Additional precisions, sparsity, DMA, embedded
 Linux, and Ethernet are later work. No FPGA timing, resource, or latency claims
 are established by software simulation.

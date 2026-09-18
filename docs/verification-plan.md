@@ -47,10 +47,24 @@ and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
 The network suite also covers inter-layer stalls and reset recovery using a small
 synthetic MLP with a deliberately slow output layer.
 
-`make test` runs 13 Python and 10 RTL test methods (many parameterized cases).
+`make test` runs 25 Python and 10 RTL test methods (many parameterized cases).
 The real-data benchmark is a separate command so the core tests remain free of
 third-party Python dependencies. GitHub Actions runs both commands; the workflow
 configuration has not yet been exercised on GitHub.
+
+## LOB data and application
+
+The Python tests verify CSV validation, seed reproducibility, threshold labels,
+causal feature windows, and disjoint raw-row support across chronological splits.
+Mutating validation/test data must not change the fitted training standardizer.
+Session boundaries must not be crossed by feature or label windows. Additional
+checks cover fixed-class metrics, model checksums, replay, and prediction from
+prefixes that contain no future rows.
+
+`make lob-benchmark` separately trains the synthetic benchmark and scores all
+592 held-out examples through individual RTL layers and the connected MLP, with
+and without external stalls. Raw-CSV replay must also reproduce every exported
+test prediction. The final-row inference check works without a future label.
 
 ## Tool references
 
