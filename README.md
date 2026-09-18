@@ -42,6 +42,12 @@ make vectors
 make test
 ```
 
+For a fresh end-to-end software audit, run **`make validate-software`** after
+installing the training dependencies. It checks both benchmarks, repeated LOB
+training, saved hardware memories, chronological labels/splits, and written CSV
+predictions. Results and logs go to `build/software-validation/`.
+See [software validation](docs/software-validation.md).
+
 `make vectors` writes a model, test vectors, expected accumulators/outputs, and
 hardware memory files to `build/fixture/`. Generated files are excluded from Git.
 The reference and its tests require no third-party Python packages.

@@ -21,20 +21,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y iverilog
           python -m pip install -r requirements-training.txt
-      - name: Run arithmetic and RTL regression
-        run: make test
-      - name: Train, export, and verify the benchmark
-        run: make benchmark
-      - name: Train and verify synthetic order-book pipeline
-        run: make lob-benchmark
+      - name: Validate software, exports, replay, and RTL from fresh models
+        run: make validate-software
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: benchmark-reports
           path: |
-            build/digits/report.json
-            build/digits/rtl_report.json
-            build/lob-data/prepared/summary.json
-            build/lob/report.json
-            build/lob/rtl_report.json
-            build/lob/replay_report.json
+            build/software-validation/report.json
+            build/software-validation/run-*/*.log
+            build/software-validation/run-*/lob/*report.json
+            build/software-validation/run-*/digits/*report.json
           if-no-files-found: error

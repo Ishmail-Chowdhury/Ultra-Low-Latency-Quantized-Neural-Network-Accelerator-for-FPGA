@@ -47,9 +47,9 @@ and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
 The network suite also covers inter-layer stalls and reset recovery using a small
 synthetic MLP with a deliberately slow output layer.
 
-`make test` runs 25 Python and 10 RTL test methods (many parameterized cases).
+`make test` runs 38 Python and 11 RTL test methods (many parameterized cases).
 The real-data benchmark is a separate command so the core tests remain free of
-third-party Python dependencies. GitHub Actions runs both commands; the workflow
+third-party Python dependencies. GitHub Actions runs the combined audit below; the workflow
 configuration has not yet been exercised on GitHub.
 
 ## LOB data and application
@@ -65,6 +65,15 @@ prefixes that contain no future rows.
 592 held-out examples through individual RTL layers and the connected MLP, with
 and without external stalls. Raw-CSV replay must also reproduce every exported
 test prediction. The final-row inference check works without a future label.
+
+## Full software audit
+
+`make validate-software` rebuilds both model benchmarks in an isolated directory.
+It runs the regression, repeats LOB training, validates saved memory files,
+recomputes chronological labels/splits and training preprocessing, and audits
+the written prediction CSV. See [software validation](software-validation.md)
+for coverage, reports, and limits. CI runs this combined command; hosted CI has
+not yet been exercised here.
 
 ## Tool references
 

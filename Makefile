@@ -1,7 +1,10 @@
 PYTHON ?= python3
 
-.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark
+.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data train-lob verify-lob predict-lob lob-benchmark validate-software
 test: test-python test-rtl
+
+validate-software:
+	$(PYTHON) -m scripts.validate_software
 
 test-python:
 	$(PYTHON) -m unittest discover -s tests -v
