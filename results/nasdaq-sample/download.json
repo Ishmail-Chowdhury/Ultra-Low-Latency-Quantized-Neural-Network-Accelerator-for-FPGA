@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/01302019.NASDAQ_ITCH50.gz",
+  "framed_messages": 2000000,
+  "downloaded_at_utc": "2026-09-18T22:27:10.749607+00:00",
+  "selection": "first N complete framed messages from start of archive",
+  "complete_archive": false,
+  "gzip_trailer_verified": false,
+  "sha256": "2aff5da8688f2c53790589efe6bfb8e09f679c60cb517baf0221610c2c8686e9",
+  "bytes": 58039979
+}

@@ -52,7 +52,7 @@ and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
 The network suite also covers inter-layer stalls and reset recovery using a small
 synthetic MLP with a deliberately slow output layer.
 
-`make test` runs 48 Python and 15 RTL test methods (many parameterized cases).
+`make test` runs 59 Python and 15 RTL test methods (many parameterized cases).
 The real-data benchmark is a separate command so the core tests remain free of
 third-party Python dependencies. GitHub Actions runs the combined audit below; the workflow
 configuration has not yet been exercised on GitHub.
@@ -103,6 +103,11 @@ ROM files. Reports record lane counts, logical MAC instances, latency, input
 start intervals, and artifact hashes. See [parallel RTL](parallel-rtl.md).
 
 ## Tool references
+
+The [real-data test](real-data-tests.md) separately exercises 982 frozen-model
+examples reconstructed from Nasdaq AAPL ITCH messages, plus all 190 held-out
+examples of a model trained on that sample. This network-dependent data download
+is an explicit local command, not part of the offline unit regression.
 
 - [Icarus command-line flags](https://steveicarus.github.io/iverilog/usage/command_line_flags.html)
 - [Icarus simulation](https://steveicarus.github.io/iverilog/usage/simulation.html)

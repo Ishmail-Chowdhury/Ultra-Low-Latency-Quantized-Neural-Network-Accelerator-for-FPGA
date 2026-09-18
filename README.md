@@ -39,6 +39,13 @@ See [the comparison and trade-offs](docs/improved-lob.md).
 592 test vectors. No retraining or board is needed for the RTL comparison.
 See [lane configurations, cycle measurements, and resource trade-offs](docs/parallel-rtl.md).
 
+**First real-data test:** Nasdaq ITCH reconstruction produced 990 five-level AAPL
+snapshots from a bounded premarket sample. The frozen synthetic model scored
+37.88% accuracy versus 42.36% for the stationary baseline, while RTL matched all
+982 predictions exactly. A separate chronological real-data training run also
+failed to beat its accuracy baseline. See [results, reproduction commands, and
+access status for LOBSTER, FI-2010, and Coinbase](docs/real-data-tests.md).
+
 The 64→16→10 benchmark achieves **96.22% floating-point accuracy** and **95.33%
 INT8 accuracy** on 450 held-out images. Both RTL layers and the complete network
 match the integer reference exactly for every test image, with and without

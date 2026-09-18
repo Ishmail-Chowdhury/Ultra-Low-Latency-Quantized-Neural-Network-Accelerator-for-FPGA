@@ -35,6 +35,9 @@ asks strictly ascend, and best bid must be less than best ask. This first import
 requires all configured depth levels; it rejects missing depth, locked/crossed
 books, nonfinite values, and malformed rows. It does not reconstruct snapshots
 from incremental exchange messages.
+For raw Nasdaq BinaryFILE messages, use the separate `scripts.import_itch`
+adapter. Paired LOBSTER CSVs use `scripts.import_lobster`. See
+[real-data testing](real-data-tests.md) for conversion rules and recorded results.
 
 ```sh
 python3 -m scripts.prepare_lob --input /path/to/snapshots.csv \

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "samples": 190,
+  "bit_exact": true,
+  "saved_memory_files_tested": true,
+  "architecture": [
+    88,
+    8,
+    3
+  ],
+  "hidden_lanes": 4,
+  "output_lanes": 3,
+  "mac_instances": 7,
+  "cases": {
+    "hidden_no_stalls": {
+      "outputs": 1520,
+      "last_input_to_last_output_cycles": 188,
+      "first_input_to_last_output_cycles": 275,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 188,
+      "max_last_input_to_last_output_cycles": 188,
+      "min_input_start_interval_cycles": 276,
+      "max_input_start_interval_cycles": 276
+    },
+    "output_no_stalls": {
+      "outputs": 570,
+      "last_input_to_last_output_cycles": 13,
+      "first_input_to_last_output_cycles": 20,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 13,
+      "max_last_input_to_last_output_cycles": 13,
+      "min_input_start_interval_cycles": 21,
+      "max_input_start_interval_cycles": 21
+    },
+    "mlp_no_stalls": {
+      "outputs": 570,
+      "last_input_to_last_output_cycles": 201,
+      "first_input_to_last_output_cycles": 288,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 201,
+      "max_last_input_to_last_output_cycles": 201,
+      "min_input_start_interval_cycles": 276,
+      "max_input_start_interval_cycles": 276
+    },
+    "hidden_stalls": {
+      "outputs": 1520,
+      "last_input_to_last_output_cycles": 191,
+      "first_input_to_last_output_cycles": 307,
+      "stall_cycles": 515,
+      "min_last_input_to_last_output_cycles": 188,
+      "max_last_input_to_last_output_cycles": 197,
+      "min_input_start_interval_cycles": 292,
+      "max_input_start_interval_cycles": 325
+    },
+    "output_stalls": {
+      "outputs": 570,
+      "last_input_to_last_output_cycles": 15,
+      "first_input_to_last_output_cycles": 27,
+      "stall_cycles": 260,
+      "min_last_input_to_last_output_cycles": 13,
+      "max_last_input_to_last_output_cycles": 71,
+      "min_input_start_interval_cycles": 21,
+      "max_input_start_interval_cycles": 80
+    },
+    "mlp_stalls": {
+      "outputs": 570,
+      "last_input_to_last_output_cycles": 202,
+      "first_input_to_last_output_cycles": 326,
+      "stall_cycles": 194,
+      "min_last_input_to_last_output_cycles": 201,
+      "max_last_input_to_last_output_cycles": 207,
+      "min_input_start_interval_cycles": 289,
+      "max_input_start_interval_cycles": 321
+    }
+  }
+}

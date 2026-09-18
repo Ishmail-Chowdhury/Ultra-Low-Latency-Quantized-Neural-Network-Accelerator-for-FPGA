@@ -1,0 +1,49 @@
+{
+  "checked_date": "2026-09-18",
+  "nasdaq": {
+    "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/",
+    "status": "tested_bounded_premarket_prefix",
+    "download_messages": 2000000,
+    "symbol": "AAPL",
+    "date": "2019-01-30",
+    "raw_snapshots": 990
+  },
+  "lobster": {
+    "url": "https://lobsterdata.com/info/DataSamples.php",
+    "status": "not_tested_sample_unavailable",
+    "observations": [
+      "Current sample page serves a React application without sample links.",
+      "Old sample archive path returns HTTP 200 text/html, not ZIP.",
+      "data.lobsterdata.com and www.lobsterdata.com failed DNS resolution in this environment."
+    ],
+    "implemented": "paired CSV importer validated with unit fixtures only"
+  },
+  "fi2010": {
+    "url": "https://etsin.fairdata.fi/dataset/73eb48d7-4dbc-4a10-a52a-da745b47a649",
+    "status": "not_tested_download_unavailable",
+    "archive_bytes": 1864361899,
+    "archive_sha256": "cea93692a270724fa91e8f124da641db727d757e5e0f0bb85067709e9932f664",
+    "observations": [
+      "Official dataset metadata and file list retrieved.",
+      "Metax v3 download authorization returned HTTP 405: Download is not enabled.",
+      "Current Etsin UI download authorization returned HTTP 500."
+    ],
+    "schema": "144 normalized feature rows and 5 label rows; labels 1=up, 2=stationary, 3=down; not raw snapshot CSV"
+  },
+  "coinbase": {
+    "url": "https://docs.cdp.coinbase.com/exchange/websocket-feed/channels#full-channel",
+    "status": "not_tested_authentication_required",
+    "observed_response": [
+      {
+        "type": "error",
+        "message": "Failed to subscribe",
+        "reason": "level2, level3, and full channels now require authentication. https://docs.cloud.coinbase.com/exchange/docs/websocket-auth"
+      },
+      {
+        "type": "subscriptions",
+        "channels": []
+      }
+    ],
+    "note": "No credentials requested or used; no market orders placed."
+  }
+}

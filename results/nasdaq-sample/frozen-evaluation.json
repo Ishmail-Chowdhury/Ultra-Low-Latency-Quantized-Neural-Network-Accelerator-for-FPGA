@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "protocol": "frozen_model_external_data_no_refit",
+  "model_training_dataset_kind": "synthetic",
+  "model_report_sha256": "583f7d97a524ce3f3c4424e96831dcbe842363b20c3e39caea225d15e718ba62",
+  "source_metadata": {
+    "schema_version": 1,
+    "dataset_kind": "real",
+    "format": "nasdaq_itch50",
+    "source": "Nasdaq public 01302019.NASDAQ_ITCH50.gz; first 2000000 framed messages; premarket prefix",
+    "source_sha256": "2aff5da8688f2c53790589efe6bfb8e09f679c60cb517baf0221610c2c8686e9",
+    "sha256": "9cb342e4ed339226d77c1886243c70fb8dedd12d30d1b271acaa04840e1760f1",
+    "levels": 5,
+    "tick_size": 0.01,
+    "symbol": "AAPL",
+    "date": "2019-01-30",
+    "rows": 990,
+    "timestamp_basis": "nanoseconds since exchange-local midnight; event-order ties incremented by 1 ns",
+    "timestamp_adjustments": 67,
+    "sessions": 1,
+    "skipped_incomplete_locked_crossed_or_halted": 11,
+    "message_counts": {
+      "S": 2,
+      "R": 8714,
+      "H": 8712,
+      "Y": 8712,
+      "L": 193665,
+      "A": 705845,
+      "D": 697100,
+      "F": 49,
+      "U": 76648,
+      "X": 298450,
+      "E": 1851,
+      "P": 252
+    },
+    "end_of_messages_seen": false,
+    "sampling": "one snapshot per target displayed-book update, including updates beyond selected depth",
+    "gap_policy": "new session after invalid depth/book or trading halt"
+  },
+  "raw_rows": 990,
+  "examples": 982,
+  "first_decision_timestamp_ns": 14407925919735,
+  "last_decision_timestamp_ns": 19592696943830,
+  "feature_config": {
+    "levels": 5,
+    "lookback": 4,
+    "horizon": 5,
+    "tick_size": 0.01,
+    "threshold_ticks": 0.5
+  },
+  "metrics": {
+    "accuracy": 0.3788187372708758,
+    "macro_f1": 0.28921244391995715,
+    "confusion_matrix": [
+      [
+        87,
+        176,
+        2
+      ],
+      [
+        128,
+        278,
+        10
+      ],
+      [
+        77,
+        217,
+        7
+      ]
+    ],
+    "class_order": [
+      "down",
+      "stationary",
+      "up"
+    ],
+    "recall": {
+      "down": 0.3283018867924528,
+      "stationary": 0.6682692307692307,
+      "up": 0.023255813953488372
+    },
+    "support": {
+      "down": 265,
+      "stationary": 416,
+      "up": 301
+    }
+  },
+  "always_stationary": {
+    "accuracy": 0.42362525458248473,
+    "macro_f1": 0.19837863614687648,
+    "confusion_matrix": [
+      [
+        0,
+        265,
+        0
+      ],
+      [
+        0,
+        416,
+        0
+      ],
+      [
+        0,
+        301,
+        0
+      ]
+    ],
+    "class_order": [
+      "down",
+      "stationary",
+      "up"
+    ],
+    "recall": {
+      "down": 0.0,
+      "stationary": 1.0,
+      "up": 0.0
+    },
+    "support": {
+      "down": 265,
+      "stationary": 416,
+      "up": 301
+    }
+  },
+  "input_values_outside_int8_range_fraction": 0.4761155341603407,
+  "rtl_verified": true,
+  "rtl": {
+    "no_stalls": {
+      "outputs": 2946,
+      "last_input_to_last_output_cycles": 397,
+      "first_input_to_last_output_cycles": 484,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 397,
+      "max_last_input_to_last_output_cycles": 397,
+      "min_input_start_interval_cycles": 464,
+      "max_input_start_interval_cycles": 464
+    },
+    "stalls": {
+      "outputs": 2946,
+      "last_input_to_last_output_cycles": 397,
+      "first_input_to_last_output_cycles": 502,
+      "stall_cycles": 993,
+      "min_last_input_to_last_output_cycles": 397,
+      "max_last_input_to_last_output_cycles": 404,
+      "min_input_start_interval_cycles": 474,
+      "max_input_start_interval_cycles": 511
+    }
+  },
+  "rtl_lanes": {
+    "hidden": 4,
+    "output": 3
+  }
+}
