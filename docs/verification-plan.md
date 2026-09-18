@@ -37,6 +37,20 @@ remain separate milestones.
 - Reset with a partial input, during MAC activity, and while an output is stalled;
   subsequent complete vectors must match the reference.
 - 1×1 and non-power-of-two matrices, ReLU, and extreme requantization shifts.
+- Early or missing input `tlast` must trigger the framing assertion.
+
+## Trained network
+
+`make benchmark` trains the documented digit MLP, checks the accuracy acceptance
+gate, and scores all 450 held-out samples through both RTL layers individually
+and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
+The network suite also covers inter-layer stalls and reset recovery using a small
+synthetic MLP with a deliberately slow output layer.
+
+`make test` runs 13 Python and 10 RTL test methods (many parameterized cases).
+The real-data benchmark is a separate command so the core tests remain free of
+third-party Python dependencies. GitHub Actions runs both commands; the workflow
+configuration has not yet been exercised on GitHub.
 
 ## Tool references
 

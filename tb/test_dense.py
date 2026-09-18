@@ -1,11 +1,45 @@
 import random
+from pathlib import Path
+import tempfile
 import unittest
 
-from models.quantization.dense_reference import DenseSpec, fixture
-from tb.dense_runner import verify_dense
+from models.quantization.dense_reference import DenseSpec, export_model, fixture
+from tb.dense_runner import DENSE_SOURCES, verify_dense
+from tb.sim import simulate
 
 
 class DenseTests(unittest.TestCase):
+    def test_malformed_frame_assertion(self):
+        spec, _ = fixture()
+        for early in [False, True]:
+            bench = f"""
+`timescale 1ns/1ps
+module tb;
+    reg clk = 0;
+    always #5 clk = ~clk;
+    reg rst = 1, s_tvalid = 0, s_tlast = 0, m_tready = 1;
+    reg signed [7:0] s_tdata = 0;
+    wire s_tready, m_tvalid, m_tlast;
+    wire signed [7:0] m_tdata;
+    integer i;
+    dense_layer dut (.*);
+    initial begin
+        repeat (2) @(negedge clk);
+        rst = 0;
+        for (i = 0; i < 8; i = i + 1) begin
+            s_tvalid = 1; s_tlast = {int(early)} && i == 0;
+            @(negedge clk);
+        end
+        $finish;
+    end
+endmodule
+"""
+            with self.subTest(early=early), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory)
+                export_model(spec, path)
+                simulate(path, bench, DENSE_SOURCES, expect_failure=True,
+                         failure_message="Input tlast does not match vector length")
+
     def test_fixture_and_cycle_count(self):
         spec, vectors = fixture()
         result = verify_dense(spec, vectors, stalls=False)

@@ -47,3 +47,20 @@ These are edge-to-edge differences. For N=8, M=4 they are 44, 51, and 52 cycles.
 Input gaps increase the first-input latency; output stalls increase both latency
 measurements. Finite fixed latency is claimed only for the no-stall case. Convert
 cycles to time only after a hardware clock frequency is established.
+
+## Two-layer MLP
+
+`rtl/top/mlp.sv` connects two dense layers directly: hidden ReLU followed by signed
+output logits. Each layer has its own MAC and input buffer. The hidden layer can
+begin accepting another vector while the output layer finishes the preceding one;
+its outputs stall if the next layer cannot yet accept them. Reset flushes both.
+
+For a single isolated 64→16→10 vector, final input to final output takes
+`16 * (64 + 3) + 10 * (16 + 3) = 1262` clock periods without external stalls.
+Repeated vectors can experience internal stalls even with an always-ready final
+receiver. Measure this traffic pattern separately; a single-layer cycle formula
+does not characterize the full pipeline's steady-state latency.
+
+The RTL consumes static per-layer shift parameters from the export metadata.
+There is no runtime model-loading interface or on-chip argmax yet. A host can
+select the highest output logit to classify the vector.

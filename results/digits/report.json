@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "seed": 2026,
+  "dataset": "sklearn.datasets.load_digits",
+  "dataset_source": "https://archive.ics.uci.edu/dataset/80/optical+recognition+of+handwritten+digits",
+  "architecture": [
+    64,
+    16,
+    10
+  ],
+  "train_samples": 1347,
+  "test_samples": 450,
+  "calibration_split": "training only",
+  "float_accuracy": 0.9622222222222222,
+  "int8_accuracy": 0.9533333333333334,
+  "accuracy_drop_percentage_points": 0.8888888888888835,
+  "acceptance": {
+    "minimum_float_accuracy": 0.9,
+    "maximum_accuracy_drop_percentage_points": 2.0,
+    "passed": true
+  },
+  "layer_error": {
+    "hidden": {
+      "mean_absolute_error": 0.027690190335052798,
+      "max_absolute_error": 0.2592818956652456
+    },
+    "logits": {
+      "mean_absolute_error": 0.49439916298594755,
+      "max_absolute_error": 2.140569411651075
+    }
+  },
+  "training_iterations": 170,
+  "versions": {
+    "python": "3.12.7",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "scikit-learn": "1.7.1"
+  },
+  "sha256": {
+    "float_parameters.json": "fc0dade0a675de615029a4e5b3a52ee12bd064a8ea580bb44283a2d094cf62d8",
+    "layer0/biases.mem": "5b3950ff89c355b61b984e7afb007e9124a4390eeea9f0276567b0d2bc446e8c",
+    "layer0/model.json": "34dcda023a3a170f46e0706923da525c622bf71056364661be09fa2be00f3ae4",
+    "layer0/weights.mem": "b3fb44559321cbbcb8e60f90f09f3fae2418b73cfee0d7f78176b04e1eb54333",
+    "layer1/biases.mem": "53d005544dc47ea4f65a7047928b5fd9693eeacb590ca1e68d578e32ed487d46",
+    "layer1/model.json": "055e885eefb656b21d25204d1393828309bc4c23a4e80fe49dbd6724becdb875",
+    "layer1/weights.mem": "1ef23cdd49f36881ee772573ac839e84718ac4a487aabd29728f72733ea0ff88",
+    "network.json": "e66afa99255309643566b6524de7cf308d017003a9c53c8a6a6387c2885c8980",
+    "split.json": "33f2e73055d0195d9b1454853cb39fb54189caad2b22d094de7bcc42bb5777b6",
+    "vectors.json": "b06b5ed97c5413aae098c04953dd292ff4db317ce8d495db358fd4304bf64dcd"
+  }
+}

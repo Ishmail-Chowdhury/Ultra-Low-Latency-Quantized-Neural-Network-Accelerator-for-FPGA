@@ -1,0 +1,7 @@
+# Exact versions used for the initial benchmark; core/RTL tests need none of these.
+# Use Python 3.11 or 3.12 for this training environment.
+numpy==1.26.4
+scipy==1.16.0
+scikit-learn==1.7.1
+joblib==1.4.2
+threadpoolctl==3.5.0

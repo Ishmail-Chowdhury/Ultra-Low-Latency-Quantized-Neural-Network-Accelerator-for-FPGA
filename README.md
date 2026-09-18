@@ -12,6 +12,13 @@ prediction accuracy or trading performance.
 - Unit tests for rounding, saturation, dimensions, and overflow bounds.
 - Signed MAC and requantization RTL, verified against the Python arithmetic.
 - Parameterized streaming dense layer with backpressure and reset regression tests.
+- Two-layer streaming MLP and a reproducible trained digit-classification benchmark.
+
+The 64→16→10 benchmark achieves **96.22% floating-point accuracy** and **95.33%
+INT8 accuracy** on 450 held-out images. Both RTL layers and the complete network
+match the integer reference exactly for every test image, with and without
+backpressure. See [recorded results](docs/results.md) and
+[benchmark methodology](docs/benchmark.md).
 
 The first verification shape is **8 inputs → 4 outputs**, batch size one, signed
 INT8 weights and activations, signed INT32 biases/accumulators, and a static
@@ -44,6 +51,18 @@ locations with `IVERILOG` and `VVP` if needed. Missing tools fail the RTL checks
 they are not silently skipped. Tests use Python `unittest` to drive self-checking
 SystemVerilog benches, so cocotb is not required for this milestone.
 
+To train and verify the real benchmark, install the pinned optional dependencies
+in a Python 3.11/3.12 environment and run:
+
+```sh
+python3 -m pip install -r requirements-training.txt
+make benchmark
+```
+
+`make train` and `make verify-model` run those stages separately. GitHub Actions
+is configured to run the regression and benchmark on pushes and pull requests;
+the hosted workflow has not yet been run for this repository.
+
 See [the arithmetic contract](docs/arithmetic.md) and
 [the implementation plan](docs/implementation-plan.md).
 Verification coverage is recorded in [the verification plan](docs/verification-plan.md).
@@ -53,9 +72,9 @@ transfer when the receiver is always ready; this is a simulation result.
 
 ## Scope
 
-Start with a reference model, one verified MAC, a sequential dense layer, and
-ready/valid flow control. Then add a small trained MLP, synthesize for the KR260,
-and measure hardware behavior. Additional precisions, sparsity, DMA, embedded
+The reference, compute blocks, streaming layers, and trained MLP now run in
+simulation. Next, synthesize for the KR260 and measure hardware behavior.
+Additional precisions, sparsity, DMA, embedded
 Linux, and Ethernet are later work. No FPGA timing, resource, or latency claims
 are established by software simulation.
 

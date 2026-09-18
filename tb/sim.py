@@ -17,7 +17,8 @@ def tool(name: str) -> str:
     return found
 
 
-def simulate(directory: Path, bench: str, sources: list[str], *, expect_failure=False) -> str:
+def simulate(directory: Path, bench: str, sources: list[str], *, expect_failure=False,
+             failure_message="MAC accumulator overflow") -> str:
     (directory / "tb.sv").write_text(bench)
     compiled = subprocess.run(
         [tool("iverilog"), "-g2012", "-Wall", "-s", "tb", "-o", "sim.vvp",
@@ -30,8 +31,8 @@ def simulate(directory: Path, bench: str, sources: list[str], *, expect_failure=
                             capture_output=True, timeout=60)
     output = result.stdout + result.stderr
     if expect_failure:
-        if result.returncode == 0 or "MAC accumulator overflow" not in output:
-            raise AssertionError(f"Expected overflow assertion did not fire:\n{output}")
+        if result.returncode == 0 or failure_message not in output:
+            raise AssertionError(f"Expected assertion {failure_message!r} did not fire:\n{output}")
     elif result.returncode or "PASS" not in output:
         raise AssertionError(f"RTL simulation failed:\n{output}")
     return output

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "samples": 450,
+  "bit_exact": true,
+  "cases": {
+    "hidden_no_stalls": {
+      "outputs": 7200,
+      "last_input_to_last_output_cycles": 1072,
+      "first_input_to_last_output_cycles": 1135,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 1072,
+      "max_last_input_to_last_output_cycles": 1072
+    },
+    "output_no_stalls": {
+      "outputs": 4500,
+      "last_input_to_last_output_cycles": 190,
+      "first_input_to_last_output_cycles": 205,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 190,
+      "max_last_input_to_last_output_cycles": 190
+    },
+    "mlp_no_stalls": {
+      "outputs": 4500,
+      "last_input_to_last_output_cycles": 1322,
+      "first_input_to_last_output_cycles": 1385,
+      "stall_cycles": 0,
+      "min_last_input_to_last_output_cycles": 1262,
+      "max_last_input_to_last_output_cycles": 1322
+    },
+    "hidden_stalls": {
+      "outputs": 7200,
+      "last_input_to_last_output_cycles": 1074,
+      "first_input_to_last_output_cycles": 1160,
+      "stall_cycles": 2401,
+      "min_last_input_to_last_output_cycles": 1072,
+      "max_last_input_to_last_output_cycles": 1088
+    },
+    "output_stalls": {
+      "outputs": 4500,
+      "last_input_to_last_output_cycles": 190,
+      "first_input_to_last_output_cycles": 212,
+      "stall_cycles": 1494,
+      "min_last_input_to_last_output_cycles": 190,
+      "max_last_input_to_last_output_cycles": 232
+    },
+    "mlp_stalls": {
+      "outputs": 4500,
+      "last_input_to_last_output_cycles": 1299,
+      "first_input_to_last_output_cycles": 1390,
+      "stall_cycles": 1493,
+      "min_last_input_to_last_output_cycles": 1263,
+      "max_last_input_to_last_output_cycles": 1323
+    }
+  }
+}
