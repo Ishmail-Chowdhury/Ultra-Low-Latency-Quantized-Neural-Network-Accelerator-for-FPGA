@@ -12,45 +12,57 @@ DENSE_SOURCES = ["rtl/compute/mac.sv", "rtl/compute/requantize.sv", "rtl/compute
 
 
 def verify_dense(spec: DenseSpec, vectors: list[list[int]], *, stalls: bool = True,
-                 seed: int = 2026, reset_phase: int = 0, memory_directory: Path | None = None) -> dict:
+                 seed: int = 2026, reset_phase: int = 0, memory_directory: Path | None = None,
+                 lanes: int = 1) -> dict:
     return verify_stream(spec, vectors, stalls=stalls, seed=seed, reset_phase=reset_phase,
-                         memory_directory=memory_directory)
+                         memory_directory=memory_directory, lanes=lanes)
 
 
 def verify_mlp(first: DenseSpec, second: DenseSpec, vectors: list[list[int]], *,
                stalls: bool = True, seed: int = 2026, reset_phase: int = 0,
-               memory_directory: Path | None = None) -> dict:
+               memory_directory: Path | None = None, hidden_lanes: int = 1,
+               output_lanes: int = 1) -> dict:
     if first.outputs != second.inputs or first.acc_bits != second.acc_bits:
         raise ValueError("MLP dimensions and accumulator widths must agree")
     if not first.relu or second.relu:
         raise ValueError("MLP requires hidden ReLU and unrectified output logits")
     return verify_stream(first, vectors, second=second, stalls=stalls, seed=seed, reset_phase=reset_phase,
-                         memory_directory=memory_directory)
+                         memory_directory=memory_directory, lanes=hidden_lanes,
+                         output_lanes=output_lanes)
 
 
 def verify_stream(spec: DenseSpec, vectors: list[list[int]], *, second: DenseSpec | None = None,
                   stalls: bool = True, seed: int = 2026, reset_phase: int = 0,
-                  memory_directory: Path | None = None) -> dict:
-    """reset_phase: 0=none, 1=partial input, 2=compute, 3=stalled output."""
+                  memory_directory: Path | None = None, lanes: int = 1,
+                  output_lanes: int = 1) -> dict:
+    """reset_phase: 0=none, 1=partial input, 2=compute, 3=stalled output,
+    4=one output accepted, then reset while the next output is stalled.
+    """
     if not vectors:
         raise ValueError("at least one vector is required")
-    if reset_phase not in (0, 1, 2, 3):
+    if reset_phase not in (0, 1, 2, 3, 4):
         raise ValueError("invalid reset phase")
+    if not 1 <= lanes <= spec.outputs or (second and not 1 <= output_lanes <= second.outputs):
+        raise ValueError("lane count must be between 1 and layer outputs")
     layer_outputs = [spec.evaluate(x)[1] for x in vectors]
     if second is not None:
         layer_outputs = [second.evaluate(x)[1] for x in layer_outputs]
     expected = [value for values in layer_outputs for value in values]
     outputs = second.outputs if second else spec.outputs
+    if reset_phase == 4 and outputs < 2:
+        raise ValueError("partial output reset requires at least two outputs")
     sources = list(DENSE_SOURCES)
-    cycles_per_vector = spec.outputs * (spec.inputs + 3)
+    cycles_per_vector = ((spec.outputs + lanes - 1) // lanes) * (spec.inputs + 2) + spec.outputs
     if second is None:
         instance = f"""dense_layer #(.INPUTS({spec.inputs}), .OUTPUTS({spec.outputs}),
-            .ACC_WIDTH({spec.acc_bits}), .SHIFT({spec.shift}), .RELU({int(spec.relu)})) dut (.*);"""
+            .ACC_WIDTH({spec.acc_bits}), .SHIFT({spec.shift}), .RELU({int(spec.relu)}),
+            .LANES({lanes})) dut (.*);"""
     else:
         sources.append("rtl/top/mlp.sv")
-        cycles_per_vector += second.outputs * (second.inputs + 3)
+        cycles_per_vector += ((second.outputs + output_lanes - 1) // output_lanes) * (second.inputs + 2) + second.outputs
         instance = f"""mlp #(.INPUTS({spec.inputs}), .HIDDEN({spec.outputs}), .OUTPUTS({outputs}),
-            .ACC_WIDTH({spec.acc_bits}), .HIDDEN_SHIFT({spec.shift}), .OUTPUT_SHIFT({second.shift})) dut (.*);"""
+            .ACC_WIDTH({spec.acc_bits}), .HIDDEN_SHIFT({spec.shift}), .OUTPUT_SHIFT({second.shift}),
+            .HIDDEN_LANES({lanes}), .OUTPUT_LANES({output_lanes})) dut (.*);"""
     flat_inputs = [value for x in vectors for value in x]
     bench = f"""
 `timescale 1ns/1ps
@@ -69,6 +81,7 @@ module tb;
     integer final_input_cycles [0:{len(vectors)-1}];
     integer frame_latency = 0, first_latency = 0;
     integer min_latency = 2147483647, max_latency = 0;
+    integer last_start = 0, interval_cycles = 0, min_interval = 0, max_interval = 0;
     integer stall_cycles = 0, warmup_sent = 0;
     integer drain_cycles = 0;
     reg running = 0, held = 0, input_accepted = 0;
@@ -95,7 +108,13 @@ module tb;
             end
             s_tvalid = 0;
             if ({reset_phase} == 2) repeat (3) @(negedge clk);
-            if ({reset_phase} == 3) begin
+            if ({reset_phase} == 4) begin
+                while (!m_tvalid) @(negedge clk);
+                m_tready = 1;
+                @(negedge clk);
+                m_tready = 0;
+            end
+            if ({reset_phase} == 3 || {reset_phase} == 4) begin
                 while (!m_tvalid) @(negedge clk);
                 repeat (12) @(negedge clk);
             end
@@ -136,7 +155,15 @@ module tb;
             held_data = m_tdata; held_last = m_tlast;
             if (m_tvalid && !m_tready) stall_cycles = stall_cycles + 1;
             if (s_tvalid && s_tready) begin
-                if ((sent % {spec.inputs}) == 0) first_input_cycles[sent / {spec.inputs}] = cycles;
+                if ((sent % {spec.inputs}) == 0) begin
+                    first_input_cycles[sent / {spec.inputs}] = cycles;
+                    if (sent > 0) begin
+                        interval_cycles = cycles - last_start;
+                        if (min_interval == 0 || interval_cycles < min_interval) min_interval = interval_cycles;
+                        if (interval_cycles > max_interval) max_interval = interval_cycles;
+                    end
+                    last_start = cycles;
+                end
                 if (s_tlast) final_input_cycles[sent / {spec.inputs}] = cycles;
                 sent = sent + 1;
             end
@@ -151,7 +178,7 @@ module tb;
                     first_latency = cycles - first_input_cycles[received / {outputs}];
                     if (frame_latency < min_latency) min_latency = frame_latency;
                     if (frame_latency > max_latency) max_latency = frame_latency;
-                    if (!{int(stalls)} && {int(second is None)} && frame_latency != {cycles_per_vector})
+                    if (!{int(stalls)} && ({int(second is None)} || received < {outputs}) && frame_latency != {cycles_per_vector})
                         $fatal(1, "Unexpected compute cycle count: %0d", frame_latency);
                 end
                 received = received + 1;
@@ -161,7 +188,7 @@ module tb;
                 if (drain_cycles == 20) begin
                     if (sent != {len(flat_inputs)}) $fatal(1, "Not all inputs transferred");
                     if ({int(stalls)} && stall_cycles == 0) $fatal(1, "Stall test did not stall");
-                    $display("PASS: outputs=%0d last_input_to_last_output=%0d first_input_to_last_output=%0d stalls=%0d min_latency=%0d max_latency=%0d", received, frame_latency, first_latency, stall_cycles, min_latency, max_latency);
+                    $display("PASS: outputs=%0d last_input_to_last_output=%0d first_input_to_last_output=%0d stalls=%0d min_latency=%0d max_latency=%0d min_interval=%0d max_interval=%0d", received, frame_latency, first_latency, stall_cycles, min_latency, max_latency, min_interval, max_interval);
                     $finish;
                 end
             end
@@ -184,9 +211,10 @@ endmodule
         write_mem(path / "inputs.mem", flat_inputs, 8)
         write_mem(path / "expected.mem", expected, 8)
         output = simulate(path, bench, sources)
-    match = re.search(r"outputs=(\d+) last_input_to_last_output=(\d+) first_input_to_last_output=(\d+) stalls=(\d+) min_latency=(\d+) max_latency=(\d+)", output)
+    match = re.search(r"outputs=(\d+) last_input_to_last_output=(\d+) first_input_to_last_output=(\d+) stalls=(\d+) min_latency=(\d+) max_latency=(\d+) min_interval=(\d+) max_interval=(\d+)", output)
     if not match:
         raise AssertionError(output)
     return dict(zip(["outputs", "last_input_to_last_output_cycles", "first_input_to_last_output_cycles", "stall_cycles",
-                     "min_last_input_to_last_output_cycles", "max_last_input_to_last_output_cycles"],
+                     "min_last_input_to_last_output_cycles", "max_last_input_to_last_output_cycles",
+                     "min_input_start_interval_cycles", "max_input_start_interval_cycles"],
                     map(int, match.groups())))

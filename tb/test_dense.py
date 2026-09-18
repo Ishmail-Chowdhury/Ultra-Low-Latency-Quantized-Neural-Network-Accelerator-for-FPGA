@@ -9,6 +9,30 @@ from tb.sim import simulate
 
 
 class DenseTests(unittest.TestCase):
+    def test_parallel_lanes_partial_groups_and_backpressure(self):
+        rng = random.Random(3070)
+        for inputs, outputs, shift, relu in [(1, 1, 0, False), (3, 5, 3, False),
+                                             (7, 7, 7, True), (8, 4, 31, False)]:
+            spec = DenseSpec(tuple(tuple(rng.randint(-128, 127) for _ in range(inputs))
+                                   for _ in range(outputs)),
+                             tuple(rng.randint(-10000, 10000) for _ in range(outputs)), shift, relu)
+            vectors = [[-128] * inputs, [127] * inputs, [0] * inputs]
+            vectors += [[rng.randint(-128, 127) for _ in range(inputs)] for _ in range(20)]
+            for lanes in range(1, outputs + 1):
+                for stalls in [False, True]:
+                    with self.subTest(inputs=inputs, outputs=outputs, lanes=lanes, stalls=stalls):
+                        result = verify_dense(spec, vectors, lanes=lanes, stalls=stalls)
+                        if not stalls:
+                            expected = ((outputs + lanes - 1) // lanes) * (inputs + 2) + outputs
+                            self.assertEqual(result["last_input_to_last_output_cycles"], expected)
+
+    def test_parallel_reset_discards_all_lanes(self):
+        spec, vectors = fixture()
+        for lanes in [2, 3, 4]:
+            for phase in [1, 2, 3, 4]:
+                with self.subTest(lanes=lanes, reset_phase=phase):
+                    verify_dense(spec, vectors[:5], lanes=lanes, reset_phase=phase)
+
     def test_simulator_consumes_saved_memory_files(self):
         spec = DenseSpec(((1,),), (0,), shift=0)
         with tempfile.TemporaryDirectory() as directory:
