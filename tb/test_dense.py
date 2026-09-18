@@ -9,6 +9,15 @@ from tb.sim import simulate
 
 
 class DenseTests(unittest.TestCase):
+    def test_simulator_consumes_saved_memory_files(self):
+        spec = DenseSpec(((1,),), (0,), shift=0)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            export_model(spec, path)
+            verify_dense(spec, [[7]], stalls=False, memory_directory=path)
+            (path / "weights.mem").write_text("02\n")
+            with self.assertRaisesRegex(AssertionError, "got 14 expected 7"):
+                verify_dense(spec, [[7]], stalls=False, memory_directory=path)
     def test_malformed_frame_assertion(self):
         spec, _ = fixture()
         for early in [False, True]:

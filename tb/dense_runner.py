@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import re
+import shutil
 import tempfile
 
 from models.quantization.dense_reference import DenseSpec, export_model, write_mem
@@ -11,21 +12,25 @@ DENSE_SOURCES = ["rtl/compute/mac.sv", "rtl/compute/requantize.sv", "rtl/compute
 
 
 def verify_dense(spec: DenseSpec, vectors: list[list[int]], *, stalls: bool = True,
-                 seed: int = 2026, reset_phase: int = 0) -> dict:
-    return verify_stream(spec, vectors, stalls=stalls, seed=seed, reset_phase=reset_phase)
+                 seed: int = 2026, reset_phase: int = 0, memory_directory: Path | None = None) -> dict:
+    return verify_stream(spec, vectors, stalls=stalls, seed=seed, reset_phase=reset_phase,
+                         memory_directory=memory_directory)
 
 
 def verify_mlp(first: DenseSpec, second: DenseSpec, vectors: list[list[int]], *,
-               stalls: bool = True, seed: int = 2026, reset_phase: int = 0) -> dict:
+               stalls: bool = True, seed: int = 2026, reset_phase: int = 0,
+               memory_directory: Path | None = None) -> dict:
     if first.outputs != second.inputs or first.acc_bits != second.acc_bits:
         raise ValueError("MLP dimensions and accumulator widths must agree")
     if not first.relu or second.relu:
         raise ValueError("MLP requires hidden ReLU and unrectified output logits")
-    return verify_stream(first, vectors, second=second, stalls=stalls, seed=seed, reset_phase=reset_phase)
+    return verify_stream(first, vectors, second=second, stalls=stalls, seed=seed, reset_phase=reset_phase,
+                         memory_directory=memory_directory)
 
 
 def verify_stream(spec: DenseSpec, vectors: list[list[int]], *, second: DenseSpec | None = None,
-                  stalls: bool = True, seed: int = 2026, reset_phase: int = 0) -> dict:
+                  stalls: bool = True, seed: int = 2026, reset_phase: int = 0,
+                  memory_directory: Path | None = None) -> dict:
     """reset_phase: 0=none, 1=partial input, 2=compute, 3=stalled output."""
     if not vectors:
         raise ValueError("at least one vector is required")
@@ -171,6 +176,11 @@ endmodule
         else:
             export_model(spec, path / "layer0")
             export_model(second, path / "layer1")
+        if memory_directory is not None:
+            # Exercise the user's saved ROM files, not newly generated substitutes.
+            for subdir in ([""] if second is None else ["layer0", "layer1"]):
+                for name in ("weights.mem", "biases.mem"):
+                    shutil.copyfile(memory_directory / subdir / name, path / subdir / name)
         write_mem(path / "inputs.mem", flat_inputs, 8)
         write_mem(path / "expected.mem", expected, 8)
         output = simulate(path, bench, sources)

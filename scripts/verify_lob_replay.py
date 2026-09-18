@@ -5,8 +5,10 @@ import hashlib
 import json
 from pathlib import Path
 
-from models.lob.data import read_snapshots
+from models.lob.data import Standardizer, prepare, read_snapshots
 from models.lob.inference import LobPredictor
+from models.lob.metrics import classification_metrics
+from models.quantization.calibration import quantize_value
 
 
 def verify(model: Path, source: Path) -> dict:
@@ -15,18 +17,48 @@ def verify(model: Path, source: Path) -> dict:
     if hashlib.sha256(source.read_bytes()).hexdigest() != report["source_sha256"]:
         raise ValueError("replay verification requires the original dataset CSV")
     rows = read_snapshots(source, predictor.config.levels)
+    splits = prepare(rows, predictor.config)
+    stored_splits = json.loads((model / "split.json").read_text())
+    for name, split in splits.items():
+        expected_split = {"raw_start": split["raw_start"], "raw_stop": split["raw_stop"],
+                          "indices": [{key: e[key] for key in ("feature_start", "decision_index", "label_end")}
+                                      for e in split["examples"]]}
+        if stored_splits.get(name) != expected_split or report["samples"][name] != len(split["examples"]):
+            raise ValueError(f"Exported {name} split does not match chronological source data")
+    expected_scaler = Standardizer.fit([e["features"] for e in splits["train"]["examples"]])
+    if predictor.scaler != expected_scaler:
+        raise ValueError("Saved preprocessing does not match training-only normalization")
     vectors = json.loads((model / "vectors.json").read_text())["vectors"]
-    if not vectors:
-        raise ValueError("no held-out vectors to verify")
-    for vector in vectors:
-        index = vector["dataset_index"]
+    test_examples = splits["test"]["examples"]
+    if len(vectors) != len(test_examples):
+        raise ValueError("Held-out vector coverage is incomplete")
+    predictions = []
+    for vector, example in zip(vectors, test_examples):
+        index = example["decision_index"]
+        if (vector["dataset_index"], vector["timestamp_ns"], vector["label"]) != (
+                index, example["timestamp_ns"], example["label"]):
+            raise ValueError(f"Wrong held-out index, timestamp, or label at snapshot {index}")
+        inputs = [quantize_value(v, predictor.input_exponent)
+                  for v in predictor.scaler.transform(example["features"])]
+        hidden_acc, hidden = predictor.first.evaluate(inputs)
+        output_acc, logits = predictor.second.evaluate(hidden)
+        if (inputs, hidden_acc, hidden, output_acc, logits) != (
+                vector["inputs"], vector["hidden_accumulators"], vector["hidden"],
+                vector["output_accumulators"], vector["outputs"]):
+            raise ValueError(f"Input/intermediate/output mismatch at snapshot {index}")
         prediction = predictor.predict(rows, index)
         if prediction["logits"] != vector["outputs"]:
             raise AssertionError(f"Raw feature/preprocessing/export mismatch at snapshot {index}")
+        predictions.append(prediction["class_id"])
+    metrics = classification_metrics([e["label"] for e in test_examples], predictions)
+    if metrics != report["test"]["int8_mlp"]:
+        raise ValueError("Reported INT8 metrics do not match source labels and predictions")
     # Inference also works at the end of the file, where no future label is available.
     tail = predictor.predict(rows, len(rows) - 1)
     result = {"dataset_kind": report["dataset_kind"], "samples": len(vectors),
-              "raw_csv_matches_export": True, "tail_prediction_without_future_label": tail}
+              "raw_csv_matches_export": True, "labels_and_splits_verified": True,
+              "training_only_preprocessing_verified": True, "all_intermediates_verified": True,
+              "int8_metrics_verified": metrics, "tail_prediction_without_future_label": tail}
     (model / "replay_report.json").write_text(json.dumps(result, indent=2) + "\n")
     return result
 
