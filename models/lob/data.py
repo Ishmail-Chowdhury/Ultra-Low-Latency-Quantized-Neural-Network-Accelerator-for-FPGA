@@ -129,25 +129,30 @@ def movement_label(current_mid: float, future_mid: float, config: FeatureConfig)
     return 2 if delta > config.threshold_ticks else 0 if delta < -config.threshold_ticks else 1
 
 
+def examples_in_range(rows: Sequence[Snapshot], config: FeatureConfig, start: int, stop: int) -> dict:
+    """Construct examples whose complete feature/label support stays in [start, stop)."""
+    if not 0 <= start < stop <= len(rows):
+        raise ValueError("invalid raw-row interval")
+    examples = []
+    for decision in range(start + config.lookback - 1, stop - config.horizon):
+        first = decision - config.lookback + 1
+        end = decision + config.horizon
+        if any(row.session_id != rows[decision].session_id for row in rows[first:end + 1]):
+            continue
+        examples.append({"feature_start": first, "decision_index": decision, "label_end": end,
+                         "timestamp_ns": rows[decision].timestamp_ns,
+                         "features": feature_window(rows, decision, config),
+                         "label": movement_label(rows[decision].mid, rows[end].mid, config)})
+    if not examples:
+        raise ValueError("interval has no usable examples; provide more rows or shorter windows")
+    return {"raw_start": start, "raw_stop": stop, "examples": examples}
+
+
 def prepare(rows: Sequence[Snapshot], config: FeatureConfig) -> dict:
     """Split raw rows 60/20/20; build windows and future labels inside each split."""
     boundaries = [0, int(len(rows) * 0.6), int(len(rows) * 0.8), len(rows)]
-    splits = {}
-    for name, start, stop in zip(("train", "validation", "test"), boundaries, boundaries[1:]):
-        examples = []
-        for decision in range(start + config.lookback - 1, stop - config.horizon):
-            first = decision - config.lookback + 1
-            end = decision + config.horizon
-            if any(row.session_id != rows[decision].session_id for row in rows[first:end + 1]):
-                continue
-            examples.append({"feature_start": first, "decision_index": decision, "label_end": end,
-                             "timestamp_ns": rows[decision].timestamp_ns,
-                             "features": feature_window(rows, decision, config),
-                             "label": movement_label(rows[decision].mid, rows[end].mid, config)})
-        if not examples:
-            raise ValueError(f"{name} has no usable examples; provide more rows or shorter windows")
-        splits[name] = {"raw_start": start, "raw_stop": stop, "examples": examples}
-    return splits
+    return {name: examples_in_range(rows, config, start, stop)
+            for name, start, stop in zip(("train", "validation", "test"), boundaries, boundaries[1:])}
 
 
 @dataclass(frozen=True)
