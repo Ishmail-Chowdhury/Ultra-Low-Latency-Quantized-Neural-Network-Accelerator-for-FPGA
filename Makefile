@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: test test-python test-rtl vectors train verify-model benchmark
+.PHONY: test test-python test-rtl vectors train verify-model benchmark lob-data
 test: test-python test-rtl
 
 test-python:
@@ -20,3 +20,7 @@ verify-model:
 
 benchmark: train
 	$(MAKE) verify-model
+
+lob-data:
+	$(PYTHON) -m scripts.generate_lob
+	$(PYTHON) -m scripts.prepare_lob --input build/lob-data/snapshots.csv --kind synthetic --source "Local pressure-driven toy generator"
