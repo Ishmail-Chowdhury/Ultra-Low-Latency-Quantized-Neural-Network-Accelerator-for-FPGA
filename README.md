@@ -10,6 +10,7 @@ prediction accuracy or trading performance.
 - Explicit signed integer arithmetic contract.
 - Dependency-free Python dense-layer reference and deterministic vector export.
 - Unit tests for rounding, saturation, dimensions, and overflow bounds.
+- Signed MAC and requantization RTL, verified against the Python arithmetic.
 
 The first verification shape is **8 inputs → 4 outputs**, batch size one, signed
 INT8 weights and activations, signed INT32 biases/accumulators, and a static
@@ -22,14 +23,29 @@ Python 3.10 or newer is required. Run commands from the repository root.
 ```sh
 make test-python
 make vectors
+make test
 ```
 
 `make vectors` writes a model, test vectors, expected accumulators/outputs, and
 hardware memory files to `build/fixture/`. Generated files are excluded from Git.
 The reference and its tests require no third-party Python packages.
 
+RTL tests require Icarus Verilog (`iverilog` and `vvp`). Install with
+`brew install icarus-verilog` on a supported Homebrew setup, or use a local Conda
+environment:
+
+```sh
+conda create --prefix ./build/simulator --override-channels -c conda-forge iverilog -y
+```
+
+The test runner searches `PATH`, then `build/simulator/bin/`. Override tool
+locations with `IVERILOG` and `VVP` if needed. Missing tools fail the RTL checks;
+they are not silently skipped. Tests use Python `unittest` to drive self-checking
+SystemVerilog benches, so cocotb is not required for this milestone.
+
 See [the arithmetic contract](docs/arithmetic.md) and
 [the implementation plan](docs/implementation-plan.md).
+Verification coverage is recorded in [the verification plan](docs/verification-plan.md).
 
 ## Scope
 
