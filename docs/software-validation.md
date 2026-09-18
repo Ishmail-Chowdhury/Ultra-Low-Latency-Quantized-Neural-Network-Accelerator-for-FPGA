@@ -14,7 +14,7 @@ Exceptions and timeouts preserve a failed report and a nonzero exit status.
 
 ## Checks
 
-1. Run the Python and RTL regression test methods (currently 44 and 11), including deliberately
+1. Run the Python and RTL regression test methods (currently 48 and 11), including deliberately
    corrupted exports and simulation using modified saved memory files.
 2. Generate and prepare a fresh 3,000-row synthetic dataset with chronological
    feature/label separation and strict CSV validation.

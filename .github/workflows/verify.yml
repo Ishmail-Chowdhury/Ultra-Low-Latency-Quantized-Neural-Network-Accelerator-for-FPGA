@@ -25,6 +25,8 @@ jobs:
         run: make validate-software
       - name: Evaluate expanding-window selection and class balancing
         run: make walk-forward
+      - name: Verify INT8-aware model improvement and paired comparison
+        run: make improve-lob
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -38,4 +40,7 @@ jobs:
             build/lob-walk-forward/model/selection.json
             build/lob-walk-forward/model/rtl_report.json
             build/lob-walk-forward/model/replay_report.json
+            build/lob-improved/model/report.json
+            build/lob-improved/model/rtl_report.json
+            build/lob-improved/model/replay_report.json
           if-no-files-found: error

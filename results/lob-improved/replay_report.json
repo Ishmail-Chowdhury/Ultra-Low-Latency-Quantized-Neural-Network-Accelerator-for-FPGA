@@ -1,0 +1,61 @@
+{
+  "dataset_kind": "synthetic",
+  "samples": 592,
+  "raw_csv_matches_export": true,
+  "labels_and_splits_verified": true,
+  "training_only_preprocessing_verified": true,
+  "all_intermediates_verified": true,
+  "int8_metrics_verified": {
+    "accuracy": 0.518581081081081,
+    "macro_f1": 0.47437060294203154,
+    "confusion_matrix": [
+      [
+        138,
+        63,
+        26
+      ],
+      [
+        65,
+        27,
+        29
+      ],
+      [
+        53,
+        49,
+        142
+      ]
+    ],
+    "class_order": [
+      "down",
+      "stationary",
+      "up"
+    ],
+    "recall": {
+      "down": 0.6079295154185022,
+      "stationary": 0.2231404958677686,
+      "up": 0.5819672131147541
+    },
+    "support": {
+      "down": 227,
+      "stationary": 121,
+      "up": 244
+    }
+  },
+  "tail_prediction_without_future_label": {
+    "decision_index": 2999,
+    "timestamp_ns": 2999000000,
+    "class_id": 0,
+    "prediction": "down",
+    "logits": [
+      75,
+      15,
+      -69
+    ]
+  },
+  "paired_baseline_verified": {
+    "same_data_and_training_seed": true,
+    "macro_f1_delta": 0.019875182551760795,
+    "accuracy_delta_percentage_points": 0.6756756756756688,
+    "stationary_recall_delta_percentage_points": 6.6115702479338845
+  }
+}

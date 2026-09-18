@@ -27,6 +27,12 @@ unbalanced MLPs and linear models on three successive validation periods, then
 tests the selected models on a reserved final interval. The recorded selected
 MLP is 88→8→3. See [the protocol and results](docs/walk-forward.md).
 
+**Improvement experiment:** `make improve-lob` selects using INT8 validation
+scores, stronger regularization, and a stationary-output adjustment. On the same
+fresh synthetic test examples, stationary recall rises from 15.70% to 22.31%
+and macro-F1 from 0.4545 to 0.4744. The selected 88→16→3 model costs more cycles.
+See [the comparison and trade-offs](docs/improved-lob.md).
+
 The 64→16→10 benchmark achieves **96.22% floating-point accuracy** and **95.33%
 INT8 accuracy** on 450 held-out images. Both RTL layers and the complete network
 match the integer reference exactly for every test image, with and without
