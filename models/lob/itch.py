@@ -20,6 +20,10 @@ def messages(stream):
         if len(header) != 2:
             raise ValueError("Truncated ITCH frame header")
         length = int.from_bytes(header, "big")
+        if length == 0:
+            if stream.read(1):
+                raise ValueError("Data after BinaryFILE session terminator")
+            return
         if not 11 <= length <= 100:
             raise ValueError(f"Invalid ITCH message length {length}")
         body = stream.read(length)

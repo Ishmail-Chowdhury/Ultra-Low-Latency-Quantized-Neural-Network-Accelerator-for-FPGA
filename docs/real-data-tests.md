@@ -145,6 +145,9 @@ assuming the public-feed overview guarantees access to this particular channel.
 
 ## Recorded artifacts
 
+The subsequent [complete-day data preparation milestone](full-day-data.md)
+records full regular-hours downloads separately from the prefix results below.
+
 Under [results/nasdaq-sample](../results/nasdaq-sample/source-status.json):
 
 - [Access status for all four sources](../results/nasdaq-sample/source-status.json)

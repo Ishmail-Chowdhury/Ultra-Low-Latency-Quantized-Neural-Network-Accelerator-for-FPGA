@@ -31,6 +31,7 @@ class FeatureConfig:
     horizon: int = 5
     tick_size: float = 0.01
     threshold_ticks: float = 0.5
+    include_mid_changes: bool = False
 
     def __post_init__(self):
         for name in ("levels", "lookback", "horizon"):
@@ -40,6 +41,8 @@ class FeatureConfig:
             raise ValueError("tick_size must be positive and finite")
         if not math.isfinite(self.threshold_ticks) or self.threshold_ticks < 0:
             raise ValueError("threshold_ticks must be finite and nonnegative")
+        if type(self.include_mid_changes) is not bool:
+            raise ValueError("include_mid_changes must be boolean")
 
 
 def columns(levels: int) -> list[str]:
@@ -93,7 +96,10 @@ def feature_names(config: FeatureConfig) -> list[str]:
     per_row = [f"{name}_{level}" for level in range(1, config.levels + 1)
                for name in ("bid_distance_ticks", "ask_distance_ticks", "log_bid_size", "log_ask_size")]
     per_row += ["spread_ticks", "depth_imbalance"]
-    return [f"lag_{lag}/{name}" for lag in range(config.lookback - 1, -1, -1) for name in per_row]
+    names = [f"lag_{lag}/{name}" for lag in range(config.lookback - 1, -1, -1) for name in per_row]
+    if config.include_mid_changes:
+        names += [f"mid_change_ticks/lag_{lag}_to_{lag - 1}" for lag in range(config.lookback - 1, 0, -1)]
+    return names
 
 
 def snapshot_features(row: Snapshot, config: FeatureConfig) -> list[float]:
@@ -118,7 +124,10 @@ def feature_window(rows: Sequence[Snapshot], decision: int, config: FeatureConfi
     window = rows[start:decision + 1]
     if any(row.session_id != window[0].session_id for row in window):
         raise ValueError("feature window crosses a session")
-    return [value for row in window for value in snapshot_features(row, config)]
+    values = [value for row in window for value in snapshot_features(row, config)]
+    if config.include_mid_changes:
+        values += [(b.mid - a.mid) / config.tick_size for a, b in zip(window, window[1:])]
+    return values
 
 
 def movement_label(current_mid: float, future_mid: float, config: FeatureConfig) -> int:
