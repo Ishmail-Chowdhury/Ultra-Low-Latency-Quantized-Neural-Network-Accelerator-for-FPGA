@@ -30,6 +30,19 @@ class ExportValidationTests(unittest.TestCase):
         self.assertEqual(report["samples"], 18)
         self.assertTrue(report["labels_and_splits_verified"])
 
+    def test_explicit_rtl_subset_does_not_claim_full_coverage(self):
+        from unittest.mock import patch
+        from scripts.verify_export import verify as verify_rtl
+        with patch("scripts.verify_export.verify_dense", return_value={}), patch("scripts.verify_export.verify_mlp", return_value={}):
+            result = verify_rtl(self.path, sample_count=3)
+        self.assertEqual(result["samples"], 3)
+        self.assertEqual(result["available_held_out_samples"], 18)
+        self.assertEqual(result["sample_positions"], [0, 8, 17])
+        self.assertFalse(result["all_held_out_samples_tested"])
+        self.assertTrue((self.path / "rtl_report_sampled3.json").exists())
+        with self.assertRaises(ValueError):
+            verify_rtl(self.path, sample_count=19)
+
     def test_manifest_cannot_omit_artifacts(self):
         self.edit("report.json", lambda r: r["sha256"].pop("layer0/weights.mem"))
         with self.assertRaisesRegex(ValueError, "Incomplete"):

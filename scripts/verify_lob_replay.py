@@ -26,6 +26,9 @@ def verify(model: Path, source: Path) -> dict:
         splits = final_splits(rows, predictor.config)
     elif protocol == "single_split":
         splits = prepare(rows, predictor.config)
+    elif protocol == "calendar_days_v1":
+        from models.lob.day_split import splits as day_splits
+        splits = day_splits(rows, predictor.config, predictor.network["split_days"])
     else:
         raise ValueError("Unknown LOB evaluation protocol")
     stored_splits = json.loads((model / "split.json").read_text())
@@ -35,7 +38,8 @@ def verify(model: Path, source: Path) -> dict:
                                       for e in split["examples"]]}
         if stored_splits.get(name) != expected_split or report["samples"][name] != len(split["examples"]):
             raise ValueError(f"Exported {name} split does not match chronological source data")
-    expected_scaler = Standardizer.fit([e["features"] for e in splits["train"]["examples"]])
+    expected_scaler = Standardizer.fit([e["features"] for e in splits["train"]["examples"]],
+                                       predictor.scaler.method, predictor.scaler.clip)
     if predictor.scaler != expected_scaler:
         raise ValueError("Saved preprocessing does not match training-only normalization")
     vectors = json.loads((model / "vectors.json").read_text())["vectors"]

@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 import csv
 import math
+import statistics
 from pathlib import Path
 from typing import Sequence
 
@@ -32,6 +33,7 @@ class FeatureConfig:
     tick_size: float = 0.01
     threshold_ticks: float = 0.5
     include_mid_changes: bool = False
+    include_queue_features: bool = False
 
     def __post_init__(self):
         for name in ("levels", "lookback", "horizon"):
@@ -43,6 +45,8 @@ class FeatureConfig:
             raise ValueError("threshold_ticks must be finite and nonnegative")
         if type(self.include_mid_changes) is not bool:
             raise ValueError("include_mid_changes must be boolean")
+        if type(self.include_queue_features) is not bool:
+            raise ValueError("include_queue_features must be boolean")
 
 
 def columns(levels: int) -> list[str]:
@@ -99,6 +103,10 @@ def feature_names(config: FeatureConfig) -> list[str]:
     names = [f"lag_{lag}/{name}" for lag in range(config.lookback - 1, -1, -1) for name in per_row]
     if config.include_mid_changes:
         names += [f"mid_change_ticks/lag_{lag}_to_{lag - 1}" for lag in range(config.lookback - 1, 0, -1)]
+    if config.include_queue_features:
+        names += [f"lag_{lag}/{name}" for lag in range(config.lookback - 1, -1, -1)
+                  for name in ("best_queue_imbalance", "microprice_offset_ticks")]
+        names += [f"snapshot_flow/lag_{lag}_to_{lag - 1}" for lag in range(config.lookback - 1, 0, -1)]
     return names
 
 
@@ -127,6 +135,22 @@ def feature_window(rows: Sequence[Snapshot], decision: int, config: FeatureConfi
     values = [value for row in window for value in snapshot_features(row, config)]
     if config.include_mid_changes:
         values += [(b.mid - a.mid) / config.tick_size for a, b in zip(window, window[1:])]
+    if config.include_queue_features:
+        for row in window:
+            imbalance = (row.bid_sizes[0] - row.ask_sizes[0]) / (row.bid_sizes[0] + row.ask_sizes[0])
+            spread = (row.ask_prices[0] - row.bid_prices[0]) / config.tick_size
+            values += [imbalance, 0.5 * spread * imbalance]
+        for before, after in zip(window, window[1:]):
+            # Net best-quote flow between sampled books, not event-level OFI:
+            # quote changes between grid points are intentionally not recoverable.
+            flow = ((after.bid_prices[0] >= before.bid_prices[0]) * after.bid_sizes[0]
+                    - (after.bid_prices[0] <= before.bid_prices[0]) * before.bid_sizes[0]
+                    - (after.ask_prices[0] <= before.ask_prices[0]) * after.ask_sizes[0]
+                    + (after.ask_prices[0] >= before.ask_prices[0]) * before.ask_sizes[0])
+            depth = (before.bid_sizes[0] + before.ask_sizes[0] + after.bid_sizes[0] + after.ask_sizes[0]) / 2
+            values.append(flow / depth)
+    if not all(math.isfinite(value) for value in values):
+        raise ValueError("feature arithmetic exceeded finite range")
     return values
 
 
@@ -168,9 +192,20 @@ def prepare(rows: Sequence[Snapshot], config: FeatureConfig) -> dict:
 class Standardizer:
     mean: tuple[float, ...]
     scale: tuple[float, ...]
+    method: str = "standard"
+    clip: float | None = None
 
     @classmethod
-    def fit(cls, rows: Sequence[Sequence[float]]):
+    def from_dict(cls, data):
+        return cls(tuple(data["mean"]), tuple(data["scale"]),
+                   data.get("method", "standard"), data.get("clip"))
+
+    @classmethod
+    def fit(cls, rows: Sequence[Sequence[float]], method="standard", clip=None):
+        if method not in ("standard", "robust"):
+            raise ValueError("unknown normalization method")
+        if clip is not None and (not math.isfinite(clip) or clip <= 0):
+            raise ValueError("clip must be finite and positive")
         if not rows or not rows[0] or any(len(row) != len(rows[0]) for row in rows):
             raise ValueError("standardizer requires a nonempty rectangular matrix")
         if any(not math.isfinite(v) for row in rows for v in row):
@@ -178,9 +213,20 @@ class Standardizer:
         mean = tuple(math.fsum(column) / len(rows) for column in zip(*rows))
         scale = tuple(math.sqrt(math.fsum((v - m) ** 2 for v in column) / len(rows))
                       for m, column in zip(mean, zip(*rows)))
-        return cls(mean, tuple(s if s > 1e-12 else 1.0 for s in scale))
+        if method == "robust":
+            mean = tuple(statistics.median(column) for column in zip(*rows))
+            quartiles = [statistics.quantiles(column, n=4, method="inclusive") if len(column) > 1
+                         else [column[0]] * 3 for column in zip(*rows)]
+            # Normal-consistent IQR; degenerate discrete columns fall back to std.
+            scale = tuple((q[2] - q[0]) / 1.3489795003921634 if q[2] - q[0] > 1e-12 else s
+                          for q, s in zip(quartiles, scale))
+        return cls(mean, tuple(s if s > 1e-12 else 1.0 for s in scale), method, clip)
 
     def transform(self, values: Sequence[float]) -> list[float]:
+        if self.method not in ("standard", "robust"):
+            raise ValueError("unknown normalization method")
+        if self.clip is not None and (not math.isfinite(self.clip) or self.clip <= 0):
+            raise ValueError("clip must be finite and positive")
         if len(values) != len(self.mean) or len(self.scale) != len(self.mean):
             raise ValueError("standardizer dimensions differ")
         if any(not math.isfinite(s) or s <= 0 for s in self.scale):
@@ -188,4 +234,6 @@ class Standardizer:
         transformed = [(v - m) / s for v, m, s in zip(values, self.mean, self.scale)]
         if any(not math.isfinite(v) for v in transformed):
             raise ValueError("nonfinite standardized feature")
+        if self.clip is not None:
+            transformed = [max(-self.clip, min(self.clip, v)) for v in transformed]
         return transformed

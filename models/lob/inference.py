@@ -15,7 +15,7 @@ class LobPredictor:
             raise ValueError("not a compatible LOB direction model")
         self.config = FeatureConfig(**self.network["feature_config"])
         scaling = json.loads((directory / "preprocessing.json").read_text())
-        self.scaler = Standardizer(tuple(scaling["mean"]), tuple(scaling["scale"]))
+        self.scaler = Standardizer.from_dict(scaling)
         self.input_exponent = self.network["layers"][0]["input_scale_exponent"]
         if (self.network.get("feature_names") != feature_names(self.config) or
                 len(self.scaler.mean) != self.first.inputs or
