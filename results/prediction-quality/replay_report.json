@@ -1,0 +1,55 @@
+{
+  "dataset_kind": "real",
+  "samples": 23377,
+  "raw_csv_matches_export": true,
+  "labels_and_splits_verified": true,
+  "training_only_preprocessing_verified": true,
+  "all_intermediates_verified": true,
+  "int8_metrics_verified": {
+    "accuracy": 0.4552765538777431,
+    "macro_f1": 0.30535015600377774,
+    "confusion_matrix": [
+      [
+        7253,
+        0,
+        2995
+      ],
+      [
+        1336,
+        0,
+        529
+      ],
+      [
+        7874,
+        0,
+        3390
+      ]
+    ],
+    "class_order": [
+      "down",
+      "stationary",
+      "up"
+    ],
+    "recall": {
+      "down": 0.7077478532396565,
+      "stationary": 0.0,
+      "up": 0.3009588068181818
+    },
+    "support": {
+      "down": 10248,
+      "stationary": 1865,
+      "up": 11264
+    }
+  },
+  "tail_prediction_without_future_label": {
+    "decision_index": 93599,
+    "timestamp_ns": 1577721599000000000,
+    "class_id": 0,
+    "prediction": "down",
+    "logits": [
+      44,
+      -32,
+      43
+    ]
+  }
+}

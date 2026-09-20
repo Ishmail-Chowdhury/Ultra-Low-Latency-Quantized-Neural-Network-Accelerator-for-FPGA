@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/S101819-v50.txt.gz",
+  "symbol": "AAPL",
+  "date": "2019-10-18",
+  "complete_archive": true,
+  "gzip_trailer_verified": true,
+  "compressed_bytes": 3951201663,
+  "compressed_sha256": "390acb4df5a01d3d8e6c34557858604ac7c655c8edc0a9e312da3c032c5d8da4",
+  "sha256": "0b9b1635a39b95d71b5e18aec4ccee65c7053530ff9458cb956febe0bac4dc87",
+  "retained_bytes": 50721363,
+  "downloaded_at_utc": "2026-09-19T23:11:49.317872+00:00",
+  "all_messages": 302347067,
+  "retained_messages": 1669598,
+  "system_events": [
+    "O",
+    "S",
+    "Q",
+    "M",
+    "E",
+    "C"
+  ],
+  "binaryfile_terminator_seen": false
+}

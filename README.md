@@ -110,6 +110,9 @@ transfer when the receiver is always ready; this is a simulation result.
 
 ## Scope
 
+The [prediction-quality study](docs/prediction-quality.md) investigates real-data
+scaling, class imbalance, prediction horizons, and model settings on macOS.
+
 The reference, compute blocks, streaming layers, and trained models run in
 software and simulation. Next software work can use real CSV snapshots, improve
 chronological validation, and investigate fixed-point feature preprocessing.

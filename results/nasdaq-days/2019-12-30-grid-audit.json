@@ -1,0 +1,34 @@
+{
+  "date": "2019-12-30",
+  "rows": 23400,
+  "missing_grid_points": 0,
+  "expected_grid_points": 23400,
+  "coverage": 1.0,
+  "sessions": 1,
+  "system_events": [
+    "O",
+    "S",
+    "Q",
+    "M",
+    "E",
+    "C"
+  ],
+  "source_sha256": "91be7ee5ce4eef608bbeeff784b1446b46ec6efbc9d1640f4ac0294b51d5f47d",
+  "message_counts": {
+    "S": 6,
+    "R": 1,
+    "H": 1,
+    "Y": 1,
+    "L": 52,
+    "A": 695972,
+    "D": 654457,
+    "E": 60203,
+    "P": 7178,
+    "X": 1467,
+    "F": 2772,
+    "U": 96968,
+    "I": 451,
+    "C": 340,
+    "Q": 2
+  }
+}

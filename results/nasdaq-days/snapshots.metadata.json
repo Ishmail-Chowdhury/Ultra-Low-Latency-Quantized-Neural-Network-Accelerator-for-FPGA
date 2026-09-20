@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "dataset_kind": "real",
+  "format": "nasdaq_itch50_regular_grid",
+  "source": "Complete public Nasdaq ITCH archives; AAPL; regular-hours causal grid",
+  "symbol": "AAPL",
+  "levels": 5,
+  "tick_size": 0.01,
+  "sha256": "40cff82acc536b79993a50bad6b98db508cef31d491592e9ad6b42d66c71da54",
+  "interval_ns": 1000000000,
+  "regular_hours": "09:30:00 inclusive to 16:00:00 exclusive, exchange local",
+  "timestamp_basis": "calendar-day ordinal since 1970 plus exchange-local ns; NOT UTC epoch",
+  "sampling": "book after all source updates with time <= grid; no future interpolation",
+  "gap_policy": "new session after invalid grid point or trading halt",
+  "days": [
+    {
+      "date": "2019-07-30",
+      "rows": 23400,
+      "missing_grid_points": 0,
+      "expected_grid_points": 23400,
+      "coverage": 1.0,
+      "sessions": 1,
+      "system_events": [
+        "O",
+        "S",
+        "Q",
+        "M",
+        "E",
+        "C"
+      ],
+      "source_sha256": "4b25be4a0ed06e9d40d13ba70f3fdff8810e8e21c6dc08bfe60ac9451a5dc243",
+      "message_counts": {
+        "S": 6,
+        "R": 1,
+        "H": 1,
+        "Y": 1,
+        "L": 53,
+        "A": 608656,
+        "D": 568438,
+        "E": 59179,
+        "P": 16652,
+        "X": 1596,
+        "F": 2958,
+        "I": 420,
+        "U": 57717,
+        "Q": 2,
+        "C": 643
+      },
+      "download": {
+        "schema_version": 1,
+        "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/07302019.NASDAQ_ITCH50.gz",
+        "symbol": "AAPL",
+        "date": "2019-07-30",
+        "complete_archive": true,
+        "gzip_trailer_verified": true,
+        "compressed_bytes": 3662140094,
+        "compressed_sha256": "c65784c48c28735901ae442dc00e215834218a359bc12a139ab4eec209bc2d4a",
+        "sha256": "4b25be4a0ed06e9d40d13ba70f3fdff8810e8e21c6dc08bfe60ac9451a5dc243",
+        "retained_bytes": 40132706,
+        "downloaded_at_utc": "2026-09-18T23:09:53.018211+00:00",
+        "all_messages": 282229684,
+        "retained_messages": 1316323,
+        "system_events": [
+          "O",
+          "S",
+          "Q",
+          "M",
+          "E",
+          "C"
+        ],
+        "binaryfile_terminator_seen": false
+      }
+    },
+    {
+      "date": "2019-08-30",
+      "rows": 23400,
+      "missing_grid_points": 0,
+      "expected_grid_points": 23400,
+      "coverage": 1.0,
+      "sessions": 1,
+      "system_events": [
+        "O",
+        "S",
+        "Q",
+        "M",
+        "E",
+        "C"
+      ],
+      "source_sha256": "87613d75702172e44e29999847ef03cc550f099a12e5845a09517dbe712a89d4",
+      "message_counts": {
+        "S": 6,
+        "R": 1,
+        "H": 1,
+        "Y": 1,
+        "L": 53,
+        "A": 540186,
+        "D": 508785,
+        "E": 48482,
+        "P": 10185,
+        "X": 2189,
+        "F": 3338,
+        "U": 89755,
+        "I": 421,
+        "C": 851,
+        "Q": 2
+      },
+      "download": {
+        "schema_version": 1,
+        "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/08302019.NASDAQ_ITCH50.gz",
+        "symbol": "AAPL",
+        "date": "2019-08-30",
+        "complete_archive": true,
+        "gzip_trailer_verified": true,
+        "compressed_bytes": 4075649457,
+        "compressed_sha256": "2f6639a37487f377851883ed54171f5565f164556c1855a28abc8475ce408b47",
+        "sha256": "87613d75702172e44e29999847ef03cc550f099a12e5845a09517dbe712a89d4",
+        "retained_bytes": 36851797,
+        "downloaded_at_utc": "2026-09-19T22:45:00.428130+00:00",
+        "all_messages": 310317357,
+        "retained_messages": 1204256,
+        "system_events": [
+          "O",
+          "S",
+          "Q",
+          "M",
+          "E",
+          "C"
+        ],
+        "binaryfile_terminator_seen": false
+      }
+    },
+    {
+      "date": "2019-10-18",
+      "rows": 23400,
+      "missing_grid_points": 0,
+      "expected_grid_points": 23400,
+      "coverage": 1.0,
+      "sessions": 1,
+      "system_events": [
+        "O",
+        "S",
+        "Q",
+        "M",
+        "E",
+        "C"
+      ],
+      "source_sha256": "0b9b1635a39b95d71b5e18aec4ccee65c7053530ff9458cb956febe0bac4dc87",
+      "message_counts": {
+        "S": 6,
+        "R": 1,
+        "H": 1,
+        "Y": 1,
+        "L": 53,
+        "A": 769396,
+        "D": 731241,
+        "E": 54748,
+        "P": 10156,
+        "F": 2670,
+        "X": 1288,
+        "I": 420,
+        "U": 98898,
+        "Q": 2,
+        "C": 717
+      },
+      "download": {
+        "schema_version": 1,
+        "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/S101819-v50.txt.gz",
+        "symbol": "AAPL",
+        "date": "2019-10-18",
+        "complete_archive": true,
+        "gzip_trailer_verified": true,
+        "compressed_bytes": 3951201663,
+        "compressed_sha256": "390acb4df5a01d3d8e6c34557858604ac7c655c8edc0a9e312da3c032c5d8da4",
+        "sha256": "0b9b1635a39b95d71b5e18aec4ccee65c7053530ff9458cb956febe0bac4dc87",
+        "retained_bytes": 50721363,
+        "downloaded_at_utc": "2026-09-19T23:11:49.317872+00:00",
+        "all_messages": 302347067,
+        "retained_messages": 1669598,
+        "system_events": [
+          "O",
+          "S",
+          "Q",
+          "M",
+          "E",
+          "C"
+        ],
+        "binaryfile_terminator_seen": false
+      }
+    },
+    {
+      "date": "2019-12-30",
+      "rows": 23400,
+      "missing_grid_points": 0,
+      "expected_grid_points": 23400,
+      "coverage": 1.0,
+      "sessions": 1,
+      "system_events": [
+        "O",
+        "S",
+        "Q",
+        "M",
+        "E",
+        "C"
+      ],
+      "source_sha256": "91be7ee5ce4eef608bbeeff784b1446b46ec6efbc9d1640f4ac0294b51d5f47d",
+      "message_counts": {
+        "S": 6,
+        "R": 1,
+        "H": 1,
+        "Y": 1,
+        "L": 52,
+        "A": 695972,
+        "D": 654457,
+        "E": 60203,
+        "P": 7178,
+        "X": 1467,
+        "F": 2772,
+        "U": 96968,
+        "I": 451,
+        "C": 340,
+        "Q": 2
+      },
+      "download": {
+        "schema_version": 1,
+        "url": "https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/12302019.NASDAQ_ITCH50.gz",
+        "symbol": "AAPL",
+        "date": "2019-12-30",
+        "complete_archive": true,
+        "gzip_trailer_verified": true,
+        "compressed_bytes": 3524013057,
+        "compressed_sha256": "ef03df46a27e6bda4dead017f84c2e3979df7211f02c7868b51d53fceb99c689",
+        "sha256": "91be7ee5ce4eef608bbeeff784b1446b46ec6efbc9d1640f4ac0294b51d5f47d",
+        "retained_bytes": 46286421,
+        "downloaded_at_utc": "2026-09-19T23:13:28.084883+00:00",
+        "all_messages": 268744780,
+        "retained_messages": 1519871,
+        "system_events": [
+          "O",
+          "S",
+          "Q",
+          "M",
+          "E",
+          "C"
+        ],
+        "binaryfile_terminator_seen": false
+      }
+    }
+  ],
+  "split_days": {
+    "train": [
+      "2019-07-30",
+      "2019-08-30"
+    ],
+    "validation": [
+      "2019-10-18"
+    ],
+    "test": [
+      "2019-12-30"
+    ]
+  }
+}

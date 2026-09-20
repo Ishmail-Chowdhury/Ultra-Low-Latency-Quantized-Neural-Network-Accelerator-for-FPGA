@@ -1,0 +1,11 @@
+{
+  "scope": "Post-evaluation interpretation only; no model tuning or reselection",
+  "legacy_accuracy_delta_percentage_points": 4.2178209351071585,
+  "additional_constant_rule_diagnostic": {
+    "rule": "always_up",
+    "accuracy": 0.48184112589297173,
+    "status": "post-hoc descriptive check; not part of the frozen selection baselines"
+  },
+  "deployment_assessment": "Predictive advantage not established: paired baseline interval includes zero, always-up diagnostic exceeds selected model, and stationary recall is zero",
+  "verification_scope": "All test vectors checked against scalar arithmetic and raw-source replay; 256 evenly spaced vectors through RTL with and without stalls"
+}

@@ -1,0 +1,86 @@
+{
+  "scope": "real TRAIN days only; diagnostic of frozen synthetic export, no refit",
+  "synthetic_report_sha256": "583f7d97a524ce3f3c4424e96831dcbe842363b20c3e39caea225d15e718ba62",
+  "diagnostic": {
+    "examples": 46784,
+    "input_scale_exponent": -4,
+    "int8_saturation_fraction": 0.0009128023566720557,
+    "examples_with_int8_saturation_fraction": 0.012311901504787962,
+    "values_outside_int8_range_fraction": 0.0009147455229449073,
+    "preprocessing_clip_fraction": 0.0,
+    "worst_features": [
+      {
+        "feature": "lag_3/ask_distance_ticks_5",
+        "int8_saturation_fraction": 0.0031420998632010946,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.192295922458082
+      },
+      {
+        "feature": "lag_2/ask_distance_ticks_5",
+        "int8_saturation_fraction": 0.0030993502051983586,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.192295922458082
+      },
+      {
+        "feature": "lag_1/ask_distance_ticks_5",
+        "int8_saturation_fraction": 0.0030779753761969904,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.188450142472232
+      },
+      {
+        "feature": "lag_0/ask_distance_ticks_5",
+        "int8_saturation_fraction": 0.0030352257181942544,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.184615039931596
+      },
+      {
+        "feature": "lag_3/ask_distance_ticks_4",
+        "int8_saturation_fraction": 0.002714603283173735,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.19229592246053
+      },
+      {
+        "feature": "lag_2/ask_distance_ticks_4",
+        "int8_saturation_fraction": 0.002671853625170999,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.192295922460528
+      },
+      {
+        "feature": "lag_1/ask_distance_ticks_4",
+        "int8_saturation_fraction": 0.0026504787961696306,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.18845014247467
+      },
+      {
+        "feature": "lag_0/ask_distance_ticks_4",
+        "int8_saturation_fraction": 0.0026077291381668946,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.184615039934022
+      },
+      {
+        "feature": "lag_3/bid_distance_ticks_5",
+        "int8_saturation_fraction": 0.0024367305061559507,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.192295922458508
+      },
+      {
+        "feature": "lag_2/bid_distance_ticks_5",
+        "int8_saturation_fraction": 0.0023939808481532147,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.19229592245851
+      },
+      {
+        "feature": "lag_1/bid_distance_ticks_5",
+        "int8_saturation_fraction": 0.0023512311901504788,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.188450142472647
+      },
+      {
+        "feature": "lag_0/bid_distance_ticks_5",
+        "int8_saturation_fraction": 0.002308481532147743,
+        "preprocessing_clip_fraction": 0.0,
+        "normalized_abs_p99": 5.184615039931999
+      }
+    ]
+  }
+}

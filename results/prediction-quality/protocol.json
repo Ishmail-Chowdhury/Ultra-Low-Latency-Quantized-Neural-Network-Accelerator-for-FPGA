@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "evaluation_protocol": "calendar_days_v1",
+  "source_sha256": "40cff82acc536b79993a50bad6b98db508cef31d491592e9ad6b42d66c71da54",
+  "split_days": {
+    "train": [
+      "2019-07-30",
+      "2019-08-30"
+    ],
+    "validation": [
+      "2019-10-18"
+    ],
+    "test": [
+      "2019-12-30"
+    ]
+  },
+  "seed": 2030,
+  "horizons_seconds": [
+    1,
+    5,
+    20
+  ],
+  "candidates": [
+    {
+      "name": "legacy8",
+      "family": "mlp",
+      "hidden": 8,
+      "alpha": 1.0,
+      "balanced": true,
+      "features": false,
+      "scaling": "standard",
+      "clip": null
+    },
+    {
+      "name": "original16_bFalse",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": false,
+      "features": false,
+      "scaling": "standard",
+      "clip": null
+    },
+    {
+      "name": "original16_bTrue",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": true,
+      "features": false,
+      "scaling": "standard",
+      "clip": null
+    },
+    {
+      "name": "features16_standard_clipNone_bFalse",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": false,
+      "features": true,
+      "scaling": "standard",
+      "clip": null
+    },
+    {
+      "name": "features16_standard_clipNone_bTrue",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": true,
+      "features": true,
+      "scaling": "standard",
+      "clip": null
+    },
+    {
+      "name": "features16_standard_clip4.0_bFalse",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": false,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "features16_standard_clip4.0_bTrue",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": true,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "features16_robust_clip4.0_bFalse",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": false,
+      "features": true,
+      "scaling": "robust",
+      "clip": 4.0
+    },
+    {
+      "name": "features16_robust_clip4.0_bTrue",
+      "family": "mlp",
+      "hidden": 16,
+      "alpha": 1.0,
+      "balanced": true,
+      "features": true,
+      "scaling": "robust",
+      "clip": 4.0
+    },
+    {
+      "name": "features32_alpha1.0",
+      "family": "mlp",
+      "hidden": 32,
+      "alpha": 1.0,
+      "balanced": false,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "features32_alpha5.0",
+      "family": "mlp",
+      "hidden": 32,
+      "alpha": 5.0,
+      "balanced": false,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "logistic_bFalse",
+      "family": "logistic",
+      "balanced": false,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "logistic_bTrue",
+      "family": "logistic",
+      "balanced": true,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "tree_bFalse",
+      "family": "tree",
+      "balanced": false,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    },
+    {
+      "name": "tree_bTrue",
+      "family": "tree",
+      "balanced": true,
+      "features": true,
+      "scaling": "standard",
+      "clip": 4.0
+    }
+  ],
+  "stationary_offsets": [
+    0.0,
+    0.25,
+    0.5
+  ],
+  "selection": "maximum validation accuracy excess over strongest horizon-specific simple baseline (stationary, train-majority, last-move persistence); macro-F1 breaks ties; declared order on exact ties",
+  "label": "endpoint mid-price movement, stationary within +/-0.5 tick",
+  "normalization_and_calibration": "train days only; no validation refit",
+  "test_role": "separate evaluate phase after selection is frozen",
+  "test_comparisons": [
+    "selected MLP, logistic, tree each at own selected horizon",
+    "legacy MLP at selected MLP horizon",
+    "selected MLP at fixed five-second horizon"
+  ],
+  "uncertainty": "paired 60-second block bootstrap on final day, 2000 resamples",
+  "versions": {
+    "python": "3.12.7",
+    "numpy": "1.26.4",
+    "sklearn": "1.7.1"
+  },
+  "code_sha256": {
+    "models/training/train_days.py": "e7b241273ad3fd074397dde2f335c854574897021d783fe681ae34a95ec6daad",
+    "models/training/diagnostics.py": "be6578970d1b5dfca618a2b909e38c5ab4e3ad7e92b7b54c5f15398f09a4d26a",
+    "models/training/integer_batch.py": "b027a34a5ddaf62d5760c941d9a786ab161c23a252f93bf217f24a61ab5938f8",
+    "models/lob/data.py": "ce5f34628afa73eb565acd29fb6d1be8aa8dc80a2a205eeacf9d2e4c2601e671",
+    "models/lob/day_split.py": "2f88634ae110111519a944b4ddee2ef4f6d20d83cf79581663ca4fd40f027450",
+    "models/training/walk_forward_lob.py": "3dcdfdc8ab46c9f2274b3277cf44c43e2904ceab493c3aa5558575725fc44805",
+    "models/quantization/calibration.py": "9f1a36d51576a027d5c0c8af042de6679f51bd3a3bcb9c9b91ebbb313b7ad707"
+  }
+}

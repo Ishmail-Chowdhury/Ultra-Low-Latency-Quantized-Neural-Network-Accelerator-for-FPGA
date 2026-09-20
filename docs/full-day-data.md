@@ -8,7 +8,8 @@ the ignored `build/` directory.
 
 ## Verified milestone
 
-The 2019-07-30 and 2019-08-30 archives have been downloaded and validated.
+The 2019-07-30, 2019-08-30, 2019-10-18, and 2019-12-30 archives have been
+downloaded and validated.
 Their provenance and regular-hours reconstruction audits are saved under
 [results/nasdaq-days](../results/nasdaq-days). Each produces 23,400 valid
 five-level books on a one-second grid from 09:30:00 inclusive to 16:00:00
@@ -18,10 +19,11 @@ These provider archives omit the BinaryFILE zero-length terminator. The audit
 records that explicitly; completeness checks use the entire HTTP payload, gzip
 integrity, and the ordered daily system events O, S, Q, M, E, C.
 
-The remaining downloads were paused. No four-day dataset or new trained-model
-result is claimed by this milestone. The intended dates were selected before
-model evaluation: July 30 and August 30 for training, October 18 for validation,
-and December 30 for testing, all in 2019. These dates are nonconsecutive, so
+The four-day CSV contains 93,600 snapshots with 100% grid coverage on each day.
+Its [provenance and split metadata](../results/nasdaq-days/snapshots.metadata.json)
+are recorded separately from trained-model results. The dates were selected
+before model evaluation: July 30 and August 30 for training, October 18 for
+validation, and December 30 for testing, all in 2019. These dates are nonconsecutive, so
 results will span different market periods rather than adjacent sessions.
 
 ## Resume and prepare
@@ -53,7 +55,7 @@ The CSV sidecar records these choices, source hashes, coverage, and day splits.
 The optional `include_mid_changes` feature adds causal midpoint differences;
 existing feature configuration remains unchanged by default.
 
-Validation: 67 Python tests passed, including scanner agreement, malformed and
+The original ingestion milestone passed 67 Python tests, including scanner agreement, malformed and
 incomplete streams, causal grid sampling, session boundaries, day partitions,
-and causal midpoint features. No improved prediction accuracy is established
-until the remaining days and model evaluation are complete.
+and causal midpoint features. Follow the separate
+[prediction-quality study](prediction-quality.md) for model evaluation.
