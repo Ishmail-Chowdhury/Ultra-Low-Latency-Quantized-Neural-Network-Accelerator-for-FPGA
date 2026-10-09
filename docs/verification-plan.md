@@ -52,10 +52,10 @@ and through `mlp.sv`. Every case is repeated with source gaps and output stalls.
 The network suite also covers inter-layer stalls and reset recovery using a small
 synthetic MLP with a deliberately slow output layer.
 
-`make test` runs 59 Python and 15 RTL test methods (many parameterized cases).
+`make test` runs 82 Python and 15 RTL test methods (many parameterized cases).
 The real-data benchmark is a separate command so the core tests remain free of
 third-party Python dependencies. GitHub Actions runs the combined audit below; the workflow
-configuration has not yet been exercised on GitHub.
+hosted results must be checked separately from local reports.
 
 ## LOB data and application
 
@@ -77,8 +77,7 @@ test prediction. The final-row inference check works without a future label.
 It runs the regression, repeats LOB training, validates saved memory files,
 recomputes chronological labels/splits and training preprocessing, and audits
 the written prediction CSV. See [software validation](software-validation.md)
-for coverage, reports, and limits. CI runs this combined command; hosted CI has
-not yet been exercised here.
+for coverage, reports, and limits. CI runs this combined command; hosted CI status is not verified here.
 
 ## Expanding-window experiment
 
@@ -114,3 +113,12 @@ is an explicit local command, not part of the offline unit regression.
 
 Validated locally with Icarus Verilog 13.0. No vendor-specific primitives or
 external verification framework are required by these tests.
+
+## Fixed-point preprocessing
+
+The eight frontend tests cover the integer arithmetic and ingress contract,
+lookup accuracy, all feature modes, causality, export binding, and corruption.
+`scripts.validate_fixed_frontend` compares the saved model's entire test set
+with floating preprocessing and can simulate a reported subset through MLP RTL.
+See [the contract and commands](fixed-features.md). This does not implement or
+verify a feature-preprocessing RTL module.

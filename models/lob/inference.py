@@ -9,7 +9,7 @@ from models.quantization.calibration import quantize_value
 
 
 class LobPredictor:
-    def __init__(self, directory: Path):
+    def __init__(self, directory: Path, *, frontend: Path | None = None):
         _, self.network, self.first, self.second = validate_export(directory)
         if self.network.get("task") != "lob_direction" or self.network.get("classes") != CLASSES:
             raise ValueError("not a compatible LOB direction model")
@@ -22,10 +22,19 @@ class LobPredictor:
                 self.first.inputs != len(feature_names(self.config))):
             raise ValueError("LOB preprocessing does not match network inputs")
         self.scaler.transform([0.0] * self.first.inputs)
+        self.frontend = None
+        if frontend is not None:
+            from models.lob.fixed_features import FixedPreprocessor
+            self.frontend = FixedPreprocessor.load(frontend, directory)
+
+    def preprocess(self, rows, decision: int) -> list[int]:
+        if self.frontend is not None:
+            return self.frontend.inputs(rows, decision)
+        values = self.scaler.transform(feature_window(rows, decision, self.config))
+        return [quantize_value(value, self.input_exponent) for value in values]
 
     def predict(self, rows, decision: int) -> dict:
-        values = self.scaler.transform(feature_window(rows, decision, self.config))
-        inputs = [quantize_value(value, self.input_exponent) for value in values]
+        inputs = self.preprocess(rows, decision)
         _, hidden = self.first.evaluate(inputs)
         _, logits = self.second.evaluate(hidden)
         label = max(range(3), key=lambda i: logits[i])

@@ -14,10 +14,19 @@
 6. **Complete — Temporal model evaluation:** compare balanced/unbalanced models
    on three expanding folds, reserve a final test interval, export the selected
    compact model, and verify source replay and saved-memory RTL.
-7. **Next — Software experiments:** run the same protocol on real snapshots or
-   specify a fixed-point feature frontend; reserve new test data for new tuning.
-8. **When hardware is available:** build for the KR260, establish a clock constraint, inspect timing
-   and resource reports, and run identical vectors through a hardware test harness.
+7. **Complete — Real-data development:** reconstruct four complete Nasdaq days,
+   investigate scaling, class balance, features, and horizons, freeze selection,
+   and evaluate a reserved day. A reliable forecasting advantage remains unproven.
+8. **Complete — Software fixed-point frontend:** export integer feature and
+   normalization constants, compare predictions with floating preprocessing,
+   and drive existing MLP RTL with sampled fixed-feature vectors. See
+   [fixed-point preprocessing](fixed-features.md).
+9. **Next on macOS:** collect fresh days for rolling evaluation and stronger
+   baselines; implement synchronous weight memories and frontend RTL; expand
+   simulation coverage. Keep future final-test data isolated from tuning.
+10. **Windows/Linux with Vivado, no board required:** synthesize and implement
+    for the KR260, constrain clocks, and inspect utilization, timing, and estimated
+    power. Actual board latency, throughput, and power measurements require hardware.
 
 Each completed milestone receives a separate Git commit after its checks pass.
 The first implementation uses static weights and scales and one clock domain.

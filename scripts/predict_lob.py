@@ -8,9 +8,13 @@ from models.lob.data import read_snapshots
 from models.lob.inference import LobPredictor
 
 
-def replay(model: Path, source: Path, output: Path) -> int:
-    predictor = LobPredictor(model)
-    rows = read_snapshots(source, predictor.config.levels)
+def replay(model: Path, source: Path, output: Path, *, frontend: Path | None = None) -> int:
+    predictor = LobPredictor(model, frontend=frontend)
+    if frontend is None:
+        rows = read_snapshots(source, predictor.config.levels)
+    else:
+        from models.lob.fixed_features import read_fixed_snapshots
+        rows = read_fixed_snapshots(source, predictor.config.levels)
     output.parent.mkdir(parents=True, exist_ok=True)
     count = 0
     with output.open("w", newline="") as stream:
@@ -33,9 +37,11 @@ def main():
     parser.add_argument("--model", type=Path, default=Path("build/lob"))
     parser.add_argument("--input", type=Path, default=Path("build/lob-data/snapshots.csv"))
     parser.add_argument("--output", type=Path, default=Path("build/lob/predictions.csv"))
+    parser.add_argument("--frontend", type=Path, help="Use a separately exported fixed-point feature frontend")
     args = parser.parse_args()
-    count = replay(args.model, args.input, args.output)
-    print(f"Wrote {count} causal predictions to {args.output}; logits are integer scores, not probabilities")
+    count = replay(args.model, args.input, args.output, frontend=args.frontend)
+    mode = "fixed-point" if args.frontend else "floating-point"
+    print(f"Wrote {count} causal predictions using {mode} preprocessing to {args.output}; logits are integer scores, not probabilities")
 
 
 if __name__ == "__main__":

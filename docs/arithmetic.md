@@ -68,3 +68,6 @@ and expected outputs. A fixed seed produces identical files.
 `weights.mem` contains N weights for output 0, then output 1, and so on.
 `biases.mem` contains one A-bit bias per output. File paths are supplied by the
 caller; no machine-specific paths are stored in the model.
+
+The optional software feature frontend has a separate [fixed-point contract](fixed-features.md).
+Its Q24 features are normalized and converted to the INT8 inputs described here.

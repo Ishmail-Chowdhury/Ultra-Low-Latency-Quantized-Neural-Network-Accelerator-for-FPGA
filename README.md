@@ -2,9 +2,9 @@
 
 A SystemVerilog accelerator project starting with a bit-exact INT8 dense layer.
 The intended FPGA target is the AMD Kria KR260. Development currently runs without
-hardware: Python training, integer inference, and RTL simulation. A synthetic
-limit-order-book pipeline now exercises the intended application; it does not
-establish real-market prediction accuracy or trading performance.
+hardware: Python training, integer inference, and RTL simulation. Synthetic and real
+limit-order-book pipelines exercise the intended application. Real-data accuracy
+is measured, but a reliable forecasting or trading advantage remains unproven.
 
 ## Current milestone
 
@@ -99,7 +99,7 @@ make benchmark
 
 `make train` and `make verify-model` run those stages separately. GitHub Actions
 is configured to run the regression and benchmarks on pushes and pull requests;
-the hosted workflow has not yet been run for this repository.
+hosted workflow status is not verified by the local validation reports.
 
 See [the arithmetic contract](docs/arithmetic.md) and
 [the implementation plan](docs/implementation-plan.md).
@@ -108,15 +108,25 @@ See [streaming interfaces and cycle accounting](docs/interfaces.md) for the
 configurable MAC lanes. The default one-lane 8×4 fixture completes 44 cycles after the last input
 transfer when the receiver is always ready; this is a simulation result.
 
+**Complete-day study:** four Nasdaq days provide 93,600 regular-hours snapshots.
+The selected 102→16→3 model scored 45.53% on the reserved day versus 41.31%
+for the matched legacy model; an always-up rule scored 48.18%. See
+[prediction quality and limitations](docs/prediction-quality.md).
+
+**Fixed-point preprocessing:** an optional integer software frontend now covers
+all 102 features and exports normalization constants and a log lookup table.
+See [arithmetic, validation, and replay commands](docs/fixed-features.md).
+
 ## Scope
 
 The [prediction-quality study](docs/prediction-quality.md) investigates real-data
 scaling, class imbalance, prediction horizons, and model settings on macOS.
 
 The reference, compute blocks, streaming layers, and trained models run in
-software and simulation. Next software work can use real CSV snapshots, improve
-chronological validation, and investigate fixed-point feature preprocessing.
-KR260 synthesis and hardware measurements can wait until hardware is available.
+software and simulation. Next software work includes fresh-day evaluation, synchronous weight memories,
+and RTL implementation of the fixed-point feature frontend. KR260 synthesis and
+timing analysis require Windows/Linux Vivado but no board. Hardware measurements
+require a board.
 Additional precisions, sparsity, DMA, embedded
 Linux, and Ethernet are later work. No FPGA timing, resource, or latency claims
 are established by software simulation.
